@@ -109,8 +109,9 @@ const SalesDashboard = () => {
 
   return (
     <div
-      className={`transition-all duration-500 ease-in-out px-4 py-6 ${isCollapsed ? "ml-[80px]" : "ml-[250px]"} w-auto overflow-hidden`}
-    >
+    className={`transition-all duration-300 px-4 py-6 
+    ${isCollapsed ? "lg:ml-[80px] md:ml-[80px]" : "lg:ml-[250px] md:ml-[250px]"} w-auto`}
+  >
       <div className="grid grid-cols-1 xs:grid-cols-3 md:grid-cols-5 gap-4 sm:gap-6">
         {dashboardStats.map((stat, index) => (
           <Card key={index} className="hover:shadow-md transition-shadow">

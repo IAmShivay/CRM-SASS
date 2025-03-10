@@ -31,7 +31,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, Pencil, Trash2, Copy, Loader, Loader2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Copy, Loader, Loader2, MoreVertical, ExternalLink } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -42,6 +42,19 @@ import { useGetActiveWorkspaceQuery } from "@/lib/store/services/workspace";
 import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/lib/store/store";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+
 // Zod validation schema
 const sourceSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters" }),
@@ -73,14 +86,31 @@ const LeadSourceManager: React.FC = () => {
   const [sources, setSources] = useState<Source[]>(webhooksData || []);
   const [selectedSource, setSelectedSource] = useState<any>(null);
   const [dialogMode, setDialogMode] = useState<
-    "create" | "edit" | "delete" | null
+    "create" | "edit" | "delete" | "webhook" | null
   >(null);
+  const [viewportWidth, setViewportWidth] = useState<number>(
+    typeof window !== "undefined" ? window.innerWidth : 1024
+  );
+
   useEffect(() => {
     if (webhooks?.data) {
       setSources(webhooks.data);
     }
   }, [webhooks]);
-  console.log(webhooksData);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setViewportWidth(window.innerWidth);
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    }
+  }, []);
+
+  const isMobile = viewportWidth < 768;
+
   const form = useForm<z.infer<typeof sourceSchema>>({
     resolver: zodResolver(sourceSchema),
     defaultValues: {
@@ -95,21 +125,19 @@ const LeadSourceManager: React.FC = () => {
       name: "",
       type: "",
       description: ""
-    }); setSelectedSource(null);
+    });
+    setSelectedSource(null);
     setDialogMode(null);
   };
 
   const openCreateDialog = () => {
-    console.log(workspacesData === undefined);
-
     if (workspacesData === undefined) {
       toast.error("No workspace selected. Please select a workspace");
-      return; // Prevent dialog from opening
+      return;
     }
     resetDialog();
     setDialogMode("create");
   };
-
 
   const openEditDialog = (source: (typeof sources)[number]) => {
     form.reset({
@@ -119,12 +147,16 @@ const LeadSourceManager: React.FC = () => {
     });
     setSelectedSource(source);
     setDialogMode("edit");
-
   };
 
   const openDeleteDialog = (source: (typeof sources)[number]) => {
     setSelectedSource(source);
     setDialogMode("delete");
+  };
+
+  const openWebhookDialog = (source: (typeof sources)[number]) => {
+    setSelectedSource(source);
+    setDialogMode("webhook");
   };
 
   const copyWebhook = (webhook: string) => {
@@ -152,9 +184,6 @@ const LeadSourceManager: React.FC = () => {
       // Handle specific API error
       const errorMessage = error.data?.error || "Failed to update webhook status";
       toast.error(errorMessage);
-
-      // Optionally revert the optimistic update if you're doing one
-      // or refresh the data from the server
     }
   };
 
@@ -224,6 +253,7 @@ const LeadSourceManager: React.FC = () => {
       }
     }
   };
+  
   const handleDelete = async (id: string) => {
     try {
       await deleteWebhook({ id }).unwrap();
@@ -236,16 +266,85 @@ const LeadSourceManager: React.FC = () => {
       toast.error(errorMessage);
     }
   };
-  if (workspaceLoading) return <div className="flex items-center justify-center min-h-screen">
-    <Loader2 className="h-8 w-8 animate-spin" />
-  </div>
+  
+  if (workspaceLoading) return (
+    <div className="flex items-center justify-center min-h-screen">
+      <Loader2 className="h-8 w-8 animate-spin" />
+    </div>
+  );
+
+  // Mobile card view for sources
+  const MobileSourceCard = ({ source }: { source: Source }) => (
+    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 mb-4">
+      <div className="flex justify-between items-start mb-3">
+        <div>
+          <h3 className="font-semibold text-base">{source.name}</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{source.type}</p>
+        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-8 w-8">
+              <MoreVertical className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => openWebhookDialog(source)}>
+              View Webhook
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => openEditDialog(source)}>
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              className="text-red-600 dark:text-red-400" 
+              onClick={() => openDeleteDialog(source)}
+            >
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+      
+      <div className="text-sm mb-3">
+        <div className="flex justify-between mb-1">
+          <span className="text-gray-600 dark:text-gray-300">Description:</span>
+          <span>{source.description || "N/A"}</span>
+        </div>
+        <div className="flex justify-between mb-1">
+          <span className="text-gray-600 dark:text-gray-300">Count:</span>
+          <span>N/A</span>
+        </div>
+        <div className="flex justify-between mb-1">
+          <span className="text-gray-600 dark:text-gray-300">Processing:</span>
+          <span>N/A</span>
+        </div>
+        <div className="flex justify-between mb-1">
+          <span className="text-gray-600 dark:text-gray-300">Qualification:</span>
+          <span>N/A</span>
+        </div>
+      </div>
+      
+      <div className="flex items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-700">
+        <div className="flex items-center space-x-2">
+          <Switch
+            checked={source.status}
+            onCheckedChange={() => toggleWebhookStatus(source.id)}
+          />
+          <span className={`text-sm ${source.status ? "text-green-600" : "text-red-600"}`}>
+            {source.status ? "Enabled" : "Disabled"}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div
-      className={`transition-all duration-500 ease-in-out px-4 py-6 ${isCollapsed ? "ml-[80px]" : "ml-[250px]"} w-auto overflow-hidden`}
+      className={`transition-all duration-500 ease-in-out px-2 sm:px-4 py-4 sm:py-6 ${
+        isCollapsed ? "ml-0 md:ml-[80px]" : "ml-0 md:ml-[250px]"
+      } w-auto overflow-hidden`}
     >
       <Card className="w-full">
-        <CardHeader className="flex flex-col md:flex-row md:items-center md:justify-between space-y-2 md:space-y-0">
+        <CardHeader className="flex flex-col md:flex-row md:items-center md:justify-between space-y-2 md:space-y-0 p-4 sm:p-6">
           <CardTitle className="text-lg md:text-xl lg:text-2xl">
             Lead Sources
           </CardTitle>
@@ -253,83 +352,104 @@ const LeadSourceManager: React.FC = () => {
             <Plus className="mr-2 h-4 w-4" /> Add Source
           </Button>
         </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Count</TableHead>
-                  <TableHead>Processing Rate</TableHead>
-                  <TableHead>Qualification Rate</TableHead>
-                  <TableHead>Webhook</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {sources.map((source) => (
-                  <TableRow key={source.id}>
-                    <TableCell>{source.name}</TableCell>
-                    <TableCell>{source.type}</TableCell>
-                    <TableCell>{source.description}</TableCell>
-                    <TableCell>N/A</TableCell>
-                    <TableCell>N/A</TableCell>
-                    <TableCell>
-                      <div className="flex items-center space-x-2">
-                        <span className="truncate max-w-xs">
-                          {source.webhook_url}
-                        </span>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => copyWebhook(source.webhook_url ?? "")}
-                          className="h-8 w-8"
-                        >
-                          <Copy className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center space-x-2">
-                        <Switch
-                          checked={source.status}
-                          onCheckedChange={() => toggleWebhookStatus(source.id)}
-                        />
-                        <span
-                          className={`text-sm ${source.status ? "text-green-600" : "text-red-600"
-                            }`}
-                        >
-                          {source.status ? "Enabled" : "Disabled"}
-                        </span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex space-x-2">
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => openEditDialog(source)}
-                          className="h-8 w-8"
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="destructive"
-                          size="icon"
-                          onClick={() => openDeleteDialog(source)}
-                          className="h-8 w-8"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
+        <CardContent className="p-3 sm:p-6">
+          {isMobile ? (
+            // Mobile view using cards
+            <div className="space-y-2">
+              {sources.length === 0 ? (
+                <div className="text-center py-6 text-gray-500 dark:text-gray-400">
+                  No lead sources found. Add your first source!
+                </div>
+              ) : (
+                sources.map((source) => (
+                  <MobileSourceCard key={source.id} source={source} />
+                ))
+              )}
+            </div>
+          ) : (
+            // Desktop view using table
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Count</TableHead>
+                    <TableHead>Processing Rate</TableHead>
+                    <TableHead>Qualification Rate</TableHead>
+                    <TableHead>Webhook</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                </TableHeader>
+                <TableBody>
+                  {sources.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={8} className="text-center py-6 text-gray-500 dark:text-gray-400">
+                        No lead sources found. Add your first source!
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    sources.map((source) => (
+                      <TableRow key={source.id}>
+                        <TableCell>{source.name}</TableCell>
+                        <TableCell>{source.type}</TableCell>
+                        <TableCell>{source.description}</TableCell>
+                        <TableCell>N/A</TableCell>
+                        <TableCell>N/A</TableCell>
+                        <TableCell>
+                          <div className="flex items-center space-x-2">
+                            <span className="truncate max-w-xs">
+                              {source.webhook_url}
+                            </span>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => copyWebhook(source.webhook_url ?? "")}
+                              className="h-8 w-8"
+                            >
+                              <Copy className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center space-x-2">
+                            <Switch
+                              checked={source.status}
+                              onCheckedChange={() => toggleWebhookStatus(source.id)}
+                            />
+                            <span className={`text-sm ${source.status ? "text-green-600" : "text-red-600"}`}>
+                              {source.status ? "Enabled" : "Disabled"}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex space-x-2">
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              onClick={() => openEditDialog(source)}
+                              className="h-8 w-8"
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              size="icon"
+                              onClick={() => openDeleteDialog(source)}
+                              className="h-8 w-8"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -338,7 +458,7 @@ const LeadSourceManager: React.FC = () => {
         open={dialogMode === "create" || dialogMode === "edit"}
         onOpenChange={() => resetDialog()}
       >
-        <DialogContent className="w-[90%] max-w-md">
+        <DialogContent className="w-[95%] max-w-md sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>
               {dialogMode === "create"
@@ -391,38 +511,30 @@ const LeadSourceManager: React.FC = () => {
                   </FormItem>
                 )}
               />
-              <DialogFooter className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+              <DialogFooter className="flex flex-col sm:flex-row gap-2 pt-2">
                 <DialogClose asChild>
                   <Button
                     type="button"
-                    variant="ghost"
-                    className="w-full sm:w-auto"
+                    variant="outline"
+                    className="w-full sm:w-auto order-2 sm:order-1"
                   >
                     Cancel
-                  </Button >
+                  </Button>
                 </DialogClose>
-                <Button type="submit" className="w-full sm:w-auto">
+                <Button 
+                  type="submit" 
+                  className="w-full sm:w-auto order-1 sm:order-2"
+                  disabled={isWebhookAdded || isUpdated}
+                >
                   {isWebhookAdded || isUpdated ? (
                     <>
-                      <Loader2 className="h-5 w-5" />
-                      <span className="ml-2">
-                        {dialogMode === "create"
-                          ? "Adding..."
-                          : isUpdated
-                            ? "Updating..."
-                            : "Updating..."}
-                      </span>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      {dialogMode === "create" ? "Adding..." : "Updating..."}
                     </>
                   ) : (
-                    <>
-                      <span className="ml-2">
-                        {dialogMode === "create" ? "Add Source" : "Update Source"}
-                      </span>
-                    </>
+                    dialogMode === "create" ? "Add Source" : "Update Source"
                   )}
                 </Button>
-
-
               </DialogFooter>
             </form>
           </Form>
@@ -431,20 +543,20 @@ const LeadSourceManager: React.FC = () => {
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={dialogMode === "delete"} onOpenChange={() => resetDialog()}>
-        <DialogContent className="w-[90%] max-w-md">
+        <DialogContent className="w-[95%] max-w-md">
           <DialogHeader>
             <DialogTitle>Confirm Deletion</DialogTitle>
           </DialogHeader>
-          <p className="mb-4">
+          <p className="py-4">
             Are you sure you want to delete the lead source &quot;
             {selectedSource?.name}&quot;?
           </p>
-          <DialogFooter className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+          <DialogFooter className="flex flex-col sm:flex-row gap-2">
             <DialogClose asChild>
               <Button
                 type="button"
-                variant="ghost"
-                className="w-full sm:w-auto"
+                variant="outline"
+                className="w-full sm:w-auto order-2 sm:order-1"
               >
                 Cancel
               </Button>
@@ -452,17 +564,49 @@ const LeadSourceManager: React.FC = () => {
             <Button
               variant="destructive"
               onClick={() => handleDelete(selectedSource?.id)}
-              className="w-full sm:w-auto"
+              className="w-full sm:w-auto order-1 sm:order-2"
+              disabled={isDeleted}
             >
               {isDeleted ? (
                 <>
-                  <Loader2 className="h-5 w-5" />
-                  <span className="ml-2">Deleting...</span>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Deleting...
                 </>
               ) : (
                 "Delete Source"
               )}
             </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Webhook Details Dialog for Mobile */}
+      <Dialog open={dialogMode === "webhook"} onOpenChange={() => resetDialog()}>
+        <DialogContent className="w-[95%] max-w-md">
+          <DialogHeader>
+            <DialogTitle>Webhook URL</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="mb-2 text-sm text-gray-600 dark:text-gray-400">
+              Use this webhook URL to receive leads from this source:
+            </p>
+            <div className="p-3 bg-gray-100 dark:bg-gray-800 rounded-md break-all text-sm mb-3">
+              {selectedSource?.webhook_url}
+            </div>
+            <Button 
+              onClick={() => copyWebhook(selectedSource?.webhook_url ?? "")}
+              className="w-full"
+            >
+              <Copy className="h-4 w-4 mr-2" />
+              Copy to Clipboard
+            </Button>
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button type="button" variant="outline" className="w-full">
+                Close
+              </Button>
+            </DialogClose>
           </DialogFooter>
         </DialogContent>
       </Dialog>

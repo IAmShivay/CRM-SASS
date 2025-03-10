@@ -156,9 +156,9 @@ const PlatformIntegrations: React.FC = () => {
 
   return (
     <div
-      className={`transition-all duration-300 px-4 py-6 
-      ${isCollapsed ? "lg:ml-[80px] md:ml-[80px]" : "lg:ml-[250px] md:ml-[250px]"} w-auto`}
-    >
+    className={`transition-all duration-300 px-4 py-6 
+    ${isCollapsed ? "lg:ml-[80px] md:ml-[80px]" : "lg:ml-[250px] md:ml-[250px]"} w-auto`}
+  >
       <Card className="w-full rounded-[16px] md:rounded-[4px] overflow-hidden">
         {/* Header */}
         <CardHeader className="flex flex-row justify-between items-center bg-gray-100 dark:bg-gray-800 md:bg-white md:dark:bg-gray-900">
