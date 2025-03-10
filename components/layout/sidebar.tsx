@@ -3,6 +3,7 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { GitPullRequestCreateArrow, NotebookIcon } from 'lucide-react';
 import {
   LayoutDashboard,
   Users,
@@ -25,6 +26,7 @@ import {
   Zap,
   ChevronLeft,
   ChevronRight,
+  Loader2,
 } from "lucide-react";
 import Link from "next/link";
 import { redirect, usePathname } from "next/navigation";
@@ -154,16 +156,21 @@ export function Sidebar({
       icon: BarChart,
       href: "/analytics",
     },
-     {
+    {
       label: "Integration",
-      icon: Settings,
+      icon: GitPullRequestCreateArrow,
       href: "/integration",
     },
     {
       label: "Documentation",
-      icon: Settings,
+      icon: NotebookIcon,
       href: "/documentation",
     },
+    {
+      label: "Workspace Settings",
+      icon: Settings,
+      href: `/workspace/${activeWorkspace?.data?.id}`,
+    }
   ];
   const handleLogout = async () => {
     try {
@@ -267,30 +274,16 @@ export function Sidebar({
 
       await updateWorkspaceStatus({ id: workspaceId, status: true });
       setSelectedWorkspace(workspace);
-
-      if (window.location.href.includes('workspace')) {
-        await router.push(`/workspace/${workspaceId}`);
-      } else if (window.location.href.includes('dashboard')) {
-        await router.push(`/dashboard`);
-      }
-      else if (window.location.href.includes('leads-sources')) {
-        await router.push(`/leads-sources`);
-      } else if (window.location.href.includes('leads')) {
-        await router.push(`/leads`);
-      }
-      else if (window.location.href.includes('analytics')) {
-        await router.push(`/analytics`);
-      }
-
-
-      setTimeout(() => {
+      if (pathname && pathname.includes('/workspace/')) {
+        router.push(`/workspace/${workspaceId}`);
+      } else {
         window.location.reload();
-      }, 100);
-
+      }
     } catch (error) {
       console.error("Failed to change workspace:", error);
     }
   };
+
   return (
     <>
       {/* Mobile Menu Button */}
@@ -522,45 +515,54 @@ export function Sidebar({
 
         {/* Navigation Routes */}
         <div className="space-y-4 py-4 px-3">
-          <div className="space-y-1">
-            {routes.map((route) => (
-              <Tooltip key={route.href}>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant={pathname === route.href ? "secondary" : "ghost"}
-                    className={cn(
-                      "w-full justify-start hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-white dark:hover:text-white relative",
-                      isCollapsed && "justify-center px-2"
-                    )}
-                    asChild
-                  >
-                    <Link href={route.href}>
-                      <route.icon className="h-4 w-4 text-slate-600 dark:text-slate-300" />
-                      {!isCollapsed && (
-                        <>
-                          <span className="ml-2">{route.label}</span>
-                          {route.badge && (
-                            <Badge
-                              variant="secondary"
-                              className="ml-auto bg-blue-100 text-blue-800"
-                            >
-                              {route.badge}
-                            </Badge>
-                          )}
-                        </>
+          {activeWorkspaceLoading ? (
+            <div className="flex flex-col items-center justify-center space-y-6 py-8">
+              <Loader2 className="w-8 h-8 animate-spin text-primary" />
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                {isCollapsed ? "" : "Loading workspace data..."}
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-1">
+              {routes.map((route) => (
+                <Tooltip key={route.href}>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant={pathname === route.href ? "secondary" : "ghost"}
+                      className={cn(
+                        "w-full justify-start hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-white dark:hover:text-white relative",
+                        isCollapsed && "justify-center px-2"
                       )}
-                    </Link>
-                  </Button>
-                </TooltipTrigger>
-                {isCollapsed && (
-                  <TooltipContent side="right">
-                    <p>{route.label}</p>
-                    {route.badge && <span className="ml-2">({route.badge})</span>}
-                  </TooltipContent>
-                )}
-              </Tooltip>
-            ))}
-          </div>
+                      asChild
+                    >
+                      <Link href={route.href}>
+                        <route.icon className="h-4 w-4 text-slate-600 dark:text-slate-300" />
+                        {!isCollapsed && (
+                          <>
+                            <span className="ml-2">{route.label}</span>
+                            {route.badge && (
+                              <Badge
+                                variant="secondary"
+                                className="ml-auto bg-blue-100 text-blue-800"
+                              >
+                                {route.badge}
+                              </Badge>
+                            )}
+                          </>
+                        )}
+                      </Link>
+                    </Button>
+                  </TooltipTrigger>
+                  {isCollapsed && (
+                    <TooltipContent side="right">
+                      <p>{route.label}</p>
+                      {route.badge && <span className="ml-2">({route.badge})</span>}
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* User Profile Section */}
