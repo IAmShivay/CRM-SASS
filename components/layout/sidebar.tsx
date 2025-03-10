@@ -149,21 +149,21 @@ export function Sidebar({
       href: "/leads",
       badge: totalLeads,
     },
-    // {
-    //   label: "Contact",
-    //   icon: MessageSquare,
-    //   href: "/contact",
-    // },
     {
       label: "Analytics",
       icon: BarChart,
       href: "/analytics",
     },
-    // {
-    //   label: "Setting",
-    //   icon: Settings,
-    //   href: "/setting",
-    // },
+     {
+      label: "Integration",
+      icon: Settings,
+      href: "/integration",
+    },
+    {
+      label: "Documentation",
+      icon: Settings,
+      href: "/documentation",
+    },
   ];
   const handleLogout = async () => {
     try {
