@@ -564,8 +564,10 @@ const LeadManagement: React.FC = () => {
   </div>;
   return (
     <div
-      className={`transition-all duration-500 ease-in-out px-4 py-6 ${isCollapsed ? "ml-[80px]" : "ml-[250px]"} w-auto overflow-hidden`}
-    >     <Card className="w-full overflow-x-auto">
+      className={`transition-all duration-300 px-4 py-6 
+    ${isCollapsed ? "lg:ml-[80px] md:ml-[80px]" : "lg:ml-[250px] md:ml-[250px]"} w-auto`}
+    >
+      <Card className="w-full overflow-hidden">
         {showFilters && (
           <FilterComponent
             values={filters}
@@ -576,11 +578,12 @@ const LeadManagement: React.FC = () => {
           />
         )}
 
-        <CardHeader className="flex flex-col md:flex-row md:items-center md:justify-between space-y-2 md:space-y-0">
-          <CardTitle className="text-lg md:text-xl lg:text-2xl ">
+        <CardHeader className="flex flex-col space-y-3 p-3 sm:p-6">
+          <CardTitle className="text-lg md:text-xl lg:text-2xl">
             Lead Management
           </CardTitle>
-          <div className="relative w-full md:w-64">
+
+          <div className="relative w-full">
             <Input
               type="text"
               placeholder="Search leads..."
@@ -589,14 +592,18 @@ const LeadManagement: React.FC = () => {
               className="w-full"
             />
           </div>
-          <div className="flex space-x-2">
-            {/* Import Button */}
+
+          <div className="flex flex-wrap gap-2">
             <Button
               variant="outline"
+              size="sm"
+              className="flex-grow sm:flex-grow-0"
               onClick={() => setShowFilters(!showFilters)}
             >
               <Filter className="mr-2 h-4 w-4" />
-              {showFilters ? "Hide Filters" : "Show Filters"}
+              <span className="whitespace-nowrap">
+                {showFilters ? "Hide Filters" : "Show Filters"}
+              </span>
             </Button>
 
             <input
@@ -606,33 +613,45 @@ const LeadManagement: React.FC = () => {
               className="hidden"
               onChange={handleImport}
             />
-            {/* <Button
-              variant="outline"
-              onClick={() => document.getElementById("import-leads")?.click()}
+
+            <div className="flex gap-2 flex-wrap">
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-grow sm:flex-grow-0"
+                onClick={exportToCSV}
+              >
+                <FileDown className="mr-2 h-4 w-4" /> CSV
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-grow sm:flex-grow-0"
+                onClick={exportToJSON}
+              >
+                <FileDown className="mr-2 h-4 w-4" /> JSON
+              </Button>
+            </div>
+
+            <Button
+              className="w-full sm:w-auto"
+              size="sm"
+              onClick={openCreateDialog}
             >
-              <FileUp className="mr-2 h-4 w-4" /> Import
-            </Button> */}
-
-            {/* Export Buttons */}
-            <Button variant="outline" onClick={exportToCSV}>
-              <FileDown className="mr-2 h-4 w-4" /> Export CSV
-            </Button>
-            <Button variant="outline" onClick={exportToJSON}>
-              <FileDown className="mr-2 h-4 w-4" /> Export JSON
-            </Button>
-
-            {/* Add Lead Button */}
-            <Button onClick={openCreateDialog}>
               <Plus className="mr-2 h-4 w-4" /> Add Lead
             </Button>
           </div>
         </CardHeader>
-        <CardContent>
+
+        <CardContent className="p-2 sm:p-6">
           {/* Delete Selected Button */}
           {selectedLeads.length > 0 && (
-            <div className="mb-4 flex space-x-2">
+            <div className="mb-4 flex flex-wrap gap-2">
               <Button
                 variant="destructive"
+                size="sm"
+                className="flex-grow sm:flex-grow-0"
                 onClick={() => setDialogMode("delete")}
               >
                 <Trash2 className="mr-2 h-4 w-4" />
@@ -640,6 +659,8 @@ const LeadManagement: React.FC = () => {
               </Button>
               <Button
                 variant="secondary"
+                size="sm"
+                className="flex-grow sm:flex-grow-0"
                 onClick={deselectAll}
               >
                 <X className="mr-2 h-4 w-4" />
@@ -648,277 +669,409 @@ const LeadManagement: React.FC = () => {
             </div>
           )}
 
-          <div className="text-xs">
-            <Table className="text-xs">
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="px-2 py-1">
+          {/* Responsive Table for mobile view */}
+          <div className="block md:hidden">
+            {filteredLeads.map((lead) => (
+              <div key={lead.id} className="mb-4 p-3 border rounded-lg shadow-sm">
+                <div className="flex justify-between items-start mb-2">
+                  <div className="flex items-center">
                     <Checkbox
-                      checked={
-                        paginatedLeads.length > 0 &&
-                        paginatedLeads.every((lead) =>
-                          selectedLeads.includes(lead.id)
-                        )
-                      }
-                      onCheckedChange={toggleSelectAllOnPage}
+                      checked={selectedLeads.includes(lead.id)}
+                      onCheckedChange={() => toggleLeadSelection(lead.id)}
+                      className="mr-2"
                     />
-                  </TableHead>
-                  <TableHead className="px-2 py-1">Name</TableHead>
-                  <TableHead className="px-2 py-1">Email</TableHead>
-                  <TableHead className="px-2 py-1">Phone</TableHead>
-                  <TableHead className="px-2 py-1">Generated At</TableHead>
-                  <TableHead className="px-2 py-1">Actions</TableHead>
-                  <TableHead className="px-2 py-1">Status</TableHead>
-                  <TableHead className="px-2 py-1">Assign</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredLeads.map((lead) => (
-                  <TableRow key={lead.id}>
-                    <TableCell className="px-2 py-1">
-                      <Checkbox
-                        checked={selectedLeads.includes(lead.id)}
-                        onCheckedChange={() => toggleLeadSelection(lead.id)}
-                      />
-                    </TableCell>
-                    <TableCell className="px-2 py-1">
-                      {lead.Name}
-                      <br />
+                    <div>
+                      <div className="font-medium">{lead.Name}</div>
                       {lead.isDuplicate && (
-                        <span style={{ color: "red", fontSize: "0.7em" }}>
+                        <span className="text-red-500 text-xs">
                           Duplicate Lead
                         </span>
                       )}
-                    </TableCell>
-                    <TableCell className="p-3">
-                      <div className="flex items-center space-x-2">
-                        {lead.is_email_valid ? (
-                          <Check className="w-5 h-5 text-emerald-600 stroke-[3]" />
-                        ) : (
-                          <X className="w-5 h-5 text-red-600 stroke-[3]" />
-                        )}
-                        <div>
-                          <span className={`
-        font-medium tracking-tight 
-        ${lead.is_email_valid
-                              ? 'text-emerald-800'
-                              : 'text-red-800'
-                            }`}
-                          >
-                            {lead.email}
-                          </span>
-                          {!lead.is_email_valid && (
-                            <div className="text-xs text-red-600 mt-0.5">
-                              Invalid Email
-                            </div>
-                          )}
+                    </div>
+                  </div>
+
+                  <div className="flex space-x-1">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => initiateDirectContact(lead, lead.contact_method)}
+                      className="h-6 w-6"
+                      title={`Contact via ${lead.contact_method}`}
+                    >
+                      {lead.contact_method === "WhatsApp" && <Send className="h-3 w-3" />}
+                      {lead.contact_method === "Call" && <Phone className="h-3 w-3" />}
+                      {lead.contact_method === "SMS" && <MessageCircle className="h-3 w-3" />}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => openEditDialog(lead)}
+                      className="h-6 w-6"
+                    >
+                      <Pencil className="h-3 w-3" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => handleView(lead.id)}
+                      className="h-6 w-6"
+                    >
+                      <Eye className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-2 text-sm">
+                  <div className="flex items-center space-x-2">
+                    <span className="font-semibold min-w-[80px]">Email:</span>
+                    <div className="flex items-center">
+                      {lead.is_email_valid ? (
+                        <Check className="w-4 h-4 text-emerald-600 stroke-[3] mr-1" />
+                      ) : (
+                        <X className="w-4 h-4 text-red-600 stroke-[3] mr-1" />
+                      )}
+                      <span className={`${lead.is_email_valid ? 'text-emerald-800' : 'text-red-800'}`}>
+                        {lead.email}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <span className="font-semibold min-w-[80px]">Phone:</span>
+                    <div className="flex items-center">
+                      {lead.is_phone_valid ? (
+                        <Check className="w-4 h-4 text-emerald-600 stroke-[3] mr-1" />
+                      ) : (
+                        <X className="w-4 h-4 text-red-600 stroke-[3] mr-1" />
+                      )}
+                      <span className={`${lead.is_phone_valid ? 'text-emerald-800' : 'text-red-800'}`}>
+                        {lead.phone}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <span className="font-semibold min-w-[80px]">Created:</span>
+                    <span>{formatDate(lead.createdAt)}</span>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <span className="font-semibold min-w-[80px]">Status:</span>
+                    <Select
+                      defaultValue={JSON.stringify({
+                        name: lead.status?.name || "Pending",
+                        color: lead.status?.color || "#ea1212",
+                      })}
+                      onValueChange={(value) => handleStatusChange(lead.id, value)}
+                    >
+                      <SelectTrigger className="h-8 w-full max-w-[200px]">
+                        <div className="flex items-center gap-2">
+                          <div className="relative h-3 w-3 rounded-lg" style={{ backgroundColor: lead?.status?.color }} />
+                          <span className="text-xs">{lead?.status?.name}</span>
                         </div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="p-3">
-                      <div className="flex items-center space-x-2">
-                        {lead.is_phone_valid ? (
-                          <Check className="w-5 h-5 text-emerald-600 stroke-[3]" />
-                        ) : (
-                          <X className="w-5 h-5 text-red-600 stroke-[3]" />
-                        )}
-                        <div>
-                          <span className={`
-        font-medium tracking-tight 
-        ${lead.is_phone_valid
-                              ? 'text-emerald-800'
-                              : 'text-red-800'
-                            }`}
-                          >
-                            {lead.phone}
-                          </span>
-                          {!lead.is_phone_valid && (
-                            <div className="text-xs text-red-600 mt-0.5">
-                              Invalid Phone
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="px-2 py-1">{formatDate(lead.createdAt)}</TableCell>
-                    <TableCell className="px-2 py-1">
-                      <div className="flex space-x-1">
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() =>
-                            initiateDirectContact(lead, lead.contact_method)
-                          }
-                          className="h-6 w-6"
-                          title={`Contact via ${lead.contact_method}`}
-                        >
-                          {lead.contact_method === "WhatsApp" && (
-                            <Send className="h-3 w-3" />
-                          )}
-                          {lead.contact_method === "Call" && (
-                            <Phone className="h-3 w-3" />
-                          )}
-                          {lead.contact_method === "SMS" && (
-                            <MessageCircle className="h-3 w-3" />
-                          )}
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => openEditDialog(lead)}
-                          className="h-6 w-6"
-                        >
-                          <Pencil className="h-3 w-3" />
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => handleView(lead.id)}
-                          className="h-6 w-6"
-                        >
-                          <Eye className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                    <TableCell className="border-none">
-                      <Select
-                        defaultValue={JSON.stringify({
-                          name: lead.status?.name || "Pending",
-                          color: lead.status?.color || "#ea1212",
-                        })}
-                        onValueChange={(value) => handleStatusChange(lead.id, value)}
-                      >
-                        <SelectTrigger
-                          className="group relative w-[200px] overflow-hidden rounded-xl border-0 bg-white px-4 py-3 shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl dark:bg-gray-800"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="relative">
-                              <div className="absolute -inset-1 rounded-lg bg-gray-400 opacity-20 blur-sm transition-opacity duration-200 group-hover:opacity-30" style={{ backgroundColor: lead?.status?.color }} />
-                              <div className="relative h-3 w-3 rounded-lg bg-gray-400" style={{ backgroundColor: lead?.status?.color }} />
-                            </div>
-                            <span className="text-sm font-medium">{lead?.status?.name}</span>
-                          </div>
-                        </SelectTrigger>
-
-                        <SelectContent className="overflow-hidden rounded-xl border-0 bg-white p-2 shadow-2xl dark:bg-gray-800">
-                          {statusData?.data.map((status: { name: string; color: string }) => (
-                            <SelectItem
-                              key={status.name}
-                              value={JSON.stringify({ name: status?.name, color: status?.color })}
-                              className="cursor-pointer rounded-lg outline-none transition-colors focus:bg-transparent"
-                            >
-                              <div className="group flex items-center gap-3 rounded-lg p-2 transition-all hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                                <div className="relative">
-                                  {/* Glow effect */}
-                                  <div
-                                    className="absolute -inset-1 rounded-lg opacity-20 blur-sm transition-all duration-200 group-hover:opacity-40"
-                                    style={{ backgroundColor: status?.color }}
-                                  />
-                                  {/* Main dot */}
-                                  <div
-                                    className="relative h-3 w-3 rounded-lg transition-transform duration-200 group-hover:scale-110"
-                                    style={{ backgroundColor: status?.color }}
-                                  />
-                                </div>
-                                <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                                  {status.name}
-                                </span>
-                              </div>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-
-                      </Select>
-                    </TableCell>
-
-
-                    <TableCell className="border-none">
-                      <Select
-                        defaultValue={JSON.stringify({
-                          name: lead?.assign_to?.name || "Not Assigned",
-                          role: lead?.assign_to?.role || "(Not Assigned)",
-                        })}
-                        onValueChange={(value) => handleAssignChange(lead?.id, value)} // Uncomment and use for status change handler
-                      >
-                        <SelectTrigger
-                          className="group relative w-[200px] overflow-hidden rounded-xl border-0 bg-white px-4 py-3 shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl dark:bg-gray-800"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="relative">
-                              <div className="absolute -inset-1 rounded-lg bg-gray-400 opacity-20 blur-sm transition-opacity duration-200 group-hover:opacity-30" />
-                              <div className="relative">
-                                <UserIcon className="h-6 w-6 text-gray-400" />
-                              </div>
-                            </div>
-                            <span className="text-sm font-medium">{lead?.assign_to?.name}</span>
-                          </div>
-                        </SelectTrigger>
-
-                        <SelectContent className="overflow-hidden rounded-xl border-0 bg-white p-2 shadow-2xl dark:bg-gray-800">
+                      </SelectTrigger>
+                      <SelectContent>
+                        {statusData?.data.map((status: any) => (
                           <SelectItem
-                            key="unassigned"
-                            value={JSON.stringify({ name: "Unassigned", role: "none" })}
-                            className="cursor-pointer rounded-lg outline-none transition-colors focus:bg-transparent"
+                            key={status.name}
+                            value={JSON.stringify({ name: status?.name, color: status?.color })}
                           >
-                            <div className="flex items-center gap-3">
-                              <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                                Unassigned
-                              </span>
+                            <div className="flex items-center gap-2">
+                              <div className="h-3 w-3 rounded-lg" style={{ backgroundColor: status?.color }} />
+                              <span>{status.name}</span>
                             </div>
                           </SelectItem>
-                          {workspaceMembers?.data.map((status: { name: string; role: string }) => (
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <span className="font-semibold min-w-[80px]">Assign:</span>
+                    <Select
+                      defaultValue={JSON.stringify({
+                        name: lead?.assign_to?.name || "Not Assigned",
+                        role: lead?.assign_to?.role || "(Not Assigned)",
+                      })}
+                      onValueChange={(value) => handleAssignChange(lead?.id, value)}
+                    >
+                      <SelectTrigger className="h-8 w-full max-w-[200px]">
+                        <div className="flex items-center gap-2">
+                          <UserIcon className="h-4 w-4 text-gray-400" />
+                          <span className="text-xs">{lead?.assign_to?.name || "Not Assigned"}</span>
+                        </div>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem
+                          key="unassigned"
+                          value={JSON.stringify({ name: "Unassigned", role: "none" })}
+                        >
+                          <span>Unassigned</span>
+                        </SelectItem>
+                        {workspaceMembers?.data.map((member: any) => (
+                          <SelectItem
+                            key={member.name}
+                            value={JSON.stringify({ name: member?.name, role: member?.role })}
+                          >
+                            <span>{member.name}</span>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="hidden md:block text-xs">
+            <div className="overflow-x-auto">
+              <Table className="text-xs">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="px-2 py-1">
+                      <Checkbox
+                        checked={
+                          paginatedLeads.length > 0 &&
+                          paginatedLeads.every((lead) =>
+                            selectedLeads.includes(lead.id)
+                          )
+                        }
+                        onCheckedChange={toggleSelectAllOnPage}
+                      />
+                    </TableHead>
+                    <TableHead className="px-2 py-1">Name</TableHead>
+                    <TableHead className="px-2 py-1">Email</TableHead>
+                    <TableHead className="px-2 py-1">Phone</TableHead>
+                    <TableHead className="px-2 py-1">Generated At</TableHead>
+                    <TableHead className="px-2 py-1">Actions</TableHead>
+                    <TableHead className="px-2 py-1">Status</TableHead>
+                    <TableHead className="px-2 py-1">Assign</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredLeads.map((lead) => (
+                    <TableRow key={lead.id}>
+                      <TableCell className="px-2 py-1">
+                        <Checkbox
+                          checked={selectedLeads.includes(lead.id)}
+                          onCheckedChange={() => toggleLeadSelection(lead.id)}
+                        />
+                      </TableCell>
+                      <TableCell className="px-2 py-1">
+                        {lead.Name}
+                        <br />
+                        {lead.isDuplicate && (
+                          <span style={{ color: "red", fontSize: "0.7em" }}>
+                            Duplicate Lead
+                          </span>
+                        )}
+                      </TableCell>
+                      <TableCell className="p-3">
+                        <div className="flex items-center space-x-2">
+                          {lead.is_email_valid ? (
+                            <Check className="w-5 h-5 text-emerald-600 stroke-[3]" />
+                          ) : (
+                            <X className="w-5 h-5 text-red-600 stroke-[3]" />
+                          )}
+                          <div>
+                            <span className={`
+                            font-medium tracking-tight 
+                            ${lead.is_email_valid
+                                ? 'text-emerald-800'
+                                : 'text-red-800'
+                              }`}
+                            >
+                              {lead.email}
+                            </span>
+                            {!lead.is_email_valid && (
+                              <div className="text-xs text-red-600 mt-0.5">
+                                Invalid Email
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="p-3">
+                        <div className="flex items-center space-x-2">
+                          {lead.is_phone_valid ? (
+                            <Check className="w-5 h-5 text-emerald-600 stroke-[3]" />
+                          ) : (
+                            <X className="w-5 h-5 text-red-600 stroke-[3]" />
+                          )}
+                          <div>
+                            <span className={`
+                            font-medium tracking-tight 
+                            ${lead.is_phone_valid
+                                ? 'text-emerald-800'
+                                : 'text-red-800'
+                              }`}
+                            >
+                              {lead.phone}
+                            </span>
+                            {!lead.is_phone_valid && (
+                              <div className="text-xs text-red-600 mt-0.5">
+                                Invalid Phone
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="px-2 py-1">{formatDate(lead.createdAt)}</TableCell>
+                      <TableCell className="px-2 py-1">
+                        <div className="flex space-x-1">
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() =>
+                              initiateDirectContact(lead, lead.contact_method)
+                            }
+                            className="h-6 w-6"
+                            title={`Contact via ${lead.contact_method}`}
+                          >
+                            {lead.contact_method === "WhatsApp" && (
+                              <Send className="h-3 w-3" />
+                            )}
+                            {lead.contact_method === "Call" && (
+                              <Phone className="h-3 w-3" />
+                            )}
+                            {lead.contact_method === "SMS" && (
+                              <MessageCircle className="h-3 w-3" />
+                            )}
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() => openEditDialog(lead)}
+                            className="h-6 w-6"
+                          >
+                            <Pencil className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() => handleView(lead.id)}
+                            className="h-6 w-6"
+                          >
+                            <Eye className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                      <TableCell className="border-none">
+                        <Select
+                          defaultValue={JSON.stringify({
+                            name: lead.status?.name || "Pending",
+                            color: lead.status?.color || "#ea1212",
+                          })}
+                          onValueChange={(value) => handleStatusChange(lead.id, value)}
+                        >
+                          <SelectTrigger
+                            className="group relative w-[200px] overflow-hidden rounded-xl border-0 bg-white px-4 py-3 shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl dark:bg-gray-800"
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="relative">
+                                <div className="absolute -inset-1 rounded-lg bg-gray-400 opacity-20 blur-sm transition-opacity duration-200 group-hover:opacity-30" style={{ backgroundColor: lead?.status?.color }} />
+                                <div className="relative h-3 w-3 rounded-lg bg-gray-400" style={{ backgroundColor: lead?.status?.color }} />
+                              </div>
+                              <span className="text-sm font-medium">{lead?.status?.name}</span>
+                            </div>
+                          </SelectTrigger>
+
+                          <SelectContent className="overflow-hidden rounded-xl border-0 bg-white p-2 shadow-2xl dark:bg-gray-800">
+                            {statusData?.data.map((status: any) => (
+                              <SelectItem
+                                key={status.name}
+                                value={JSON.stringify({ name: status?.name, color: status?.color })}
+                                className="cursor-pointer rounded-lg outline-none transition-colors focus:bg-transparent"
+                              >
+                                <div className="group flex items-center gap-3 rounded-lg p-2 transition-all hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                  <div className="relative">
+                                    {/* Glow effect */}
+                                    <div
+                                      className="absolute -inset-1 rounded-lg opacity-20 blur-sm transition-all duration-200 group-hover:opacity-40"
+                                      style={{ backgroundColor: status?.color }}
+                                    />
+                                    {/* Main dot */}
+                                    <div
+                                      className="relative h-3 w-3 rounded-lg transition-transform duration-200 group-hover:scale-110"
+                                      style={{ backgroundColor: status?.color }}
+                                    />
+                                  </div>
+                                  <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                                    {status.name}
+                                  </span>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </TableCell>
+                      <TableCell className="border-none">
+                        <Select
+                          defaultValue={JSON.stringify({
+                            name: lead?.assign_to?.name || "Not Assigned",
+                            role: lead?.assign_to?.role || "(Not Assigned)",
+                          })}
+                          onValueChange={(value) => handleAssignChange(lead?.id, value)}
+                        >
+                          <SelectTrigger
+                            className="group relative w-[200px] overflow-hidden rounded-xl border-0 bg-white px-4 py-3 shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl dark:bg-gray-800"
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="relative">
+                                <div className="absolute -inset-1 rounded-lg bg-gray-400 opacity-20 blur-sm transition-opacity duration-200 group-hover:opacity-30" />
+                                <div className="relative">
+                                  <UserIcon className="h-6 w-6 text-gray-400" />
+                                </div>
+                              </div>
+                              <span className="text-sm font-medium">{lead?.assign_to?.name}</span>
+                            </div>
+                          </SelectTrigger>
+
+                          <SelectContent className="overflow-hidden rounded-xl border-0 bg-white p-2 shadow-2xl dark:bg-gray-800">
                             <SelectItem
-                              key={status.name}
-                              value={JSON.stringify({ name: status?.name, role: status?.role })}
+                              key="unassigned"
+                              value={JSON.stringify({ name: "Unassigned", role: "none" })}
                               className="cursor-pointer rounded-lg outline-none transition-colors focus:bg-transparent"
                             >
                               <div className="flex items-center gap-3">
                                 <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                                  {status.name}
+                                  Unassigned
                                 </span>
                               </div>
                             </SelectItem>
-                          ))}
-                        </SelectContent>
-
-                      </Select>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                            {workspaceMembers?.data.map((status: any) => (
+                              <SelectItem
+                                key={status.name}
+                                value={JSON.stringify({ name: status?.name, role: status?.role })}
+                                className="cursor-pointer rounded-lg outline-none transition-colors focus:bg-transparent"
+                              >
+                                <div className="flex items-center gap-3">
+                                  <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                                    {status.name}
+                                  </span>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </div>
-
-
-          {/* Pagination */}
-          {/* <div className="flex justify-between items-center mt-4">
-            <Button
-              variant="outline"
-              onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
-              disabled={currentPage === 1}
-            >
-              Previous
-            </Button>
-            <span>
-              Page {currentPage} of {totalPages}
-            </span>
-            <Button
-              variant="outline"
-              onClick={() =>
-                setCurrentPage((prev) => Math.min(totalPages, prev + 1))
-              }
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </Button>
-          </div> */}
         </CardContent>
       </Card>
+
+      {/* Dialogs - Adjusted for mobile */}
       <Dialog
         open={dialogMode === "create" || dialogMode === "edit"}
         onOpenChange={() => resetDialog()}
       >
-        <DialogContent className="w-[90%] max-w-md">
+        <DialogContent className="w-[95vw] max-w-md mx-auto p-4 sm:p-6">
           <DialogHeader>
             <DialogTitle>
               {dialogMode === "create" ? "Add New Lead" : "Edit Lead"}
@@ -926,7 +1079,7 @@ const LeadManagement: React.FC = () => {
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="name"
@@ -940,19 +1093,6 @@ const LeadManagement: React.FC = () => {
                     </FormItem>
                   )}
                 />
-                {/* <FormField
-                  control={form.control}
-                  name="lastName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Last Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter last name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                /> */}
               </div>
               <FormField
                 control={form.control}
@@ -984,7 +1124,7 @@ const LeadManagement: React.FC = () => {
                   </FormItem>
                 )}
               />
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="company"
@@ -1031,7 +1171,7 @@ const LeadManagement: React.FC = () => {
                         <SelectItem value="WhatsApp">WhatsApp</SelectItem>
                         <SelectItem value="SMS">SMS</SelectItem>
                         <SelectItem value="Call">Call</SelectItem>
-                        <SelectItem value="Email">Call</SelectItem>
+                        <SelectItem value="Email">Email</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -1058,43 +1198,41 @@ const LeadManagement: React.FC = () => {
                 )}
               />
 
-              <DialogFooter>
+              <DialogFooter className="flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
                 <DialogClose asChild>
-                  <Button type="button" variant="outline">
+                  <Button type="button" variant="outline" className="w-full sm:w-auto">
                     Cancel
                   </Button>
                 </DialogClose>
-                <Button type="submit">
+                <Button type="submit" className="w-full sm:w-auto">
                   {isUpdateLoading ? (
                     <>
-                      <Loader2 />
-                      {" "}
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Loading...
                     </>
                   ) : dialogMode === "create" ? "Add Lead" : "Update Lead"}
                 </Button>
-
               </DialogFooter>
             </form>
           </Form>
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirmation Dialog */}
+      {/* Delete Confirmation Dialog - Adjusted for mobile */}
       <Dialog
         open={dialogMode === "delete"}
         onOpenChange={() => setDialogMode(null)}
       >
-        <DialogContent>
+        <DialogContent className="w-[95vw] max-w-md mx-auto p-4 sm:p-6">
           <DialogHeader>
             <DialogTitle>Delete Selected Leads</DialogTitle>
           </DialogHeader>
           <p>Are you sure you want to delete {selectedLeads?.length} lead(s)?</p>
-          <DialogFooter>
+          <DialogFooter className="flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
             <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
+              <Button variant="outline" className="w-full sm:w-auto">Cancel</Button>
             </DialogClose>
-            <Button variant="destructive" onClick={handleDelete}>
+            <Button variant="destructive" onClick={handleDelete} className="w-full sm:w-auto">
               Delete
             </Button>
           </DialogFooter>
