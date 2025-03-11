@@ -9,6 +9,11 @@ export const leadsApis = leadsApi.injectEndpoints({
     getLeads: builder.query<Lead[], { userId: string; sourceId: string }>({
       query: ({ userId, sourceId }) => ({
         url: `?action=getLeads&userId=${userId}&sourceId=${sourceId}`,
+        providesTags: (
+          result: Lead[] | undefined,
+          error: any,
+          workspaceId: number
+        ) => [{ type: "Leads", id: workspaceId }],
       }),
     }),
     getLeadsByUser: builder.query<Lead[], { userId: string }>({

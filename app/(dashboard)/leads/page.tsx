@@ -108,11 +108,9 @@ const LeadManagement: React.FC = () => {
       : ({} as { workspaceId: string }), // Fallback empty object if workspaceId is undefined
     {
       skip: !workspaceId || isLoadingWorkspace, // Skip fetching if workspaceId is missing or loading
-      pollingInterval: 10000, // Poll every 2 seconds (2000 ms)
     }
   );
   const { data: workspaceMembers, isLoading: isLoadingMembers } = useGetWorkspaceMembersQuery(workspaceId);
-  const POLLING_INTERVAL = 10000
   const { data: statusData, isLoading: isLoadingStatus }: any = useGetStatusQuery(workspaceId);
   useEffect(() => {
     const fetchLeads = () => {
@@ -164,11 +162,6 @@ const LeadManagement: React.FC = () => {
     // Initial fetch
     fetchLeads();
 
-    // Set up polling
-    const pollInterval = setInterval(fetchLeads, POLLING_INTERVAL);
-
-    // Cleanup
-    return () => clearInterval(pollInterval);
   }, [workspaceData, isLoadingLeads]);
   console.log(activeWorkspace);
 

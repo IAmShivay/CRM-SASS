@@ -14,7 +14,7 @@ export const leadsApi = createApi({
       return headers;
     },
   }),
-  keepUnusedDataFor: 60,
   refetchOnReconnect: true,
   endpoints: () => ({}),
+  tagTypes: ["Leads"],
 });
