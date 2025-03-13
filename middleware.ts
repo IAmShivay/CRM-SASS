@@ -1,34 +1,25 @@
 import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { cacheControlMiddleware } from "./middleware/cache-control";
 
 export async function middleware(req: NextRequest) {
+  // Apply cache control and rate limiting
+  const cacheResponse = await cacheControlMiddleware(req);
+  if (cacheResponse.status === 429) {
+    return cacheResponse;
+  }
+
   const res = NextResponse.next();
   const supabase = createMiddlewareClient({ req, res });
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  const isAuthRoute = ["/login", "/signup"].includes(req.nextUrl.pathname);
-  const isDashboardRoute = req.nextUrl.pathname.startsWith("/dashboard");
-
-  // If user is already logged in and on an auth route, redirect to dashboard
-  if (session && isAuthRoute) {
-    return NextResponse.redirect(new URL("/dashboard", req.url));
-  }
-
-  // If user is not logged in and trying to access a protected route, redirect to login
-  if (!session && !isAuthRoute) {
-    return NextResponse.redirect(new URL("/login", req.url));
-  }
+  await supabase.auth.getSession();
 
   return res;
 }
 
 export const config = {
   matcher: [
-    "/dashboard/:path*", // Protect dashboard and its subroutes
-    "/profile/:path*", // Protect profile routes
-    "/settings/:path*", // Protect settings
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
