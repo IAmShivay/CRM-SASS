@@ -109,10 +109,10 @@ export function Sidebar({
     (state: RootState) => state.sidebar.isCollapsed
   );
   const pathname = usePathname();
-  const {unreadCount}=useLeadNotifications();
+  const { unreadCount } = useLeadNotifications();
   console.log(unreadCount)
-  const unreadBadge = unreadCount?unreadCount:'NA'
-  console.log(unreadBadge)  
+  const unreadBadge = unreadCount ? unreadCount : 'NA'
+  console.log(unreadBadge)
   const router = useRouter();
   const [updateWorkspaceStatus] = useUpdateWorkspaceStatusMutation();
   const {
@@ -139,12 +139,12 @@ export function Sidebar({
     isError: activeWorkspaceError,
   } = useGetActiveWorkspaceQuery();
   const { data: workspaceData, isLoading: isLoadingLeads }: any = useGetLeadsByWorkspaceQuery(
-    activeWorkspace?.data?.id 
-      ? { 
-          workspaceId: activeWorkspace.data.id,
-          limit: 1,  // We only need the count, not actual leads
-          offset: 0
-        } 
+    activeWorkspace?.data?.id
+      ? {
+        workspaceId: activeWorkspace.data.id,
+        limit: 1,  // We only need the count, not actual leads
+        offset: 0
+      }
       : skipToken
   );
 
@@ -156,7 +156,7 @@ export function Sidebar({
     isLoading: isLoadingStatus,
     error: statusError,
   } = useGetStatusQuery(activeWorkspace?.data?.id ? String(activeWorkspace.data.id) : skipToken);
-  
+
 
   // **Filter Leads into Contacts**
   const contactStatuses = new Set(
@@ -219,10 +219,10 @@ export function Sidebar({
       href: "/analytics",
     },
     {
-      label:'Notifications',
-      icon:Bell ,
-      href:'/notifications',
-      badge:unreadBadge
+      label: 'Notifications',
+      icon: Bell,
+      href: '/notifications',
+      badge: unreadBadge
     }
     // {
     //   label: "Integration",
@@ -348,23 +348,23 @@ export function Sidebar({
     try {
       const workspace = workspaces.find((w) => w.id === workspaceId);
       if (!workspace) return;
-  
+
       // Show loading state
       toast.loading("Switching workspace...");
-  
+
       // Update workspace status
       await updateWorkspaceStatus({ id: workspaceId, status: true });
       setSelectedWorkspace(workspace);
-  
+
       // Use the comprehensive cache invalidation function to invalidate all API caches
       invalidateAllCacheOnWorkspaceChange(workspaceId, dispatch);
-      
+
       // Refetch workspace data
       await refetch();
-  
+
       // Use router.push to navigate appropriately
       const currentPath = window.location.pathname;
-      
+
       // Check if we're on a workspace-specific page
       if (currentPath.includes('workspace')) {
         router.push(`/workspace/${workspaceId}`);
@@ -373,7 +373,7 @@ export function Sidebar({
         // This is more efficient than a full page reload
         router.refresh();
       }
-      
+
       // Dismiss loading toast and show success message
       toast.dismiss();
       toast.success(`Switched to workspace: ${workspace.name}`);
@@ -425,7 +425,7 @@ export function Sidebar({
 
         {/* Logo Section */}
         <div className={cn(
-          "flex items-center bg-inherit", 
+          "flex items-center bg-inherit",
           isCollapsed ? "justify-center py-4" : "justify-between py-4 px-4"
         )}>
           <a
@@ -440,7 +440,7 @@ export function Sidebar({
             </div>
             {!isCollapsed && <span className="font-semibold text-lg">SCRAFT</span>}
           </a>
-          
+
           {/* Removing the close button from here since we now have a dedicated mobile menu button */}
         </div>
 
@@ -642,8 +642,13 @@ export function Sidebar({
         </div>
 
         {/* Navigation Routes */}
-        <div className="space-y-4 py-2 px-3">
-          {/* General Section */}
+        <div
+          className="space-y-4 py-2 px-3 overflow-y-auto flex-grow"
+          style={{
+            maxHeight: "calc(100% - 190px)", // You can adjust the value as needed
+            height: "100%", // Ensures it stretches within its container
+          }}
+        >        {/* General Section */}
           <div className="space-y-1">
             {!isCollapsed && <p className="text-xs font-medium text-gray-500 px-2 mb-2">General</p>}
             {routes.slice(0, 1).map((route) => (
@@ -687,7 +692,7 @@ export function Sidebar({
               </Tooltip>
             ))}
           </div>
-          
+
           {/* Tasks Section */}
           <div className="space-y-1">
             {!isCollapsed && <p className="text-xs font-medium text-gray-500 px-2 mb-2">Tasks</p>}
@@ -715,7 +720,7 @@ export function Sidebar({
               )}
             </Tooltip>
           </div>
-          
+
           {/* Apps Section */}
           <div className="space-y-1">
             {!isCollapsed && <p className="text-xs font-medium text-gray-500 px-2 mb-2">Apps</p>}
@@ -745,7 +750,7 @@ export function Sidebar({
               )}
             </Tooltip>
           </div>
-          
+
           {/* Main Routes Section */}
           <div className="space-y-1">
             {!isCollapsed && <p className="text-xs font-medium text-gray-500 px-2 mb-2">Pages</p>}
@@ -790,7 +795,7 @@ export function Sidebar({
               </Tooltip>
             ))}
           </div>
-          
+
           {/* Other Section */}
           <div className="space-y-1 py-2">
             {!isCollapsed && <p className="text-xs font-medium text-gray-500 px-4 mb-2">Other</p>}
@@ -821,7 +826,11 @@ export function Sidebar({
         </div>
 
         {/* User Profile Section */}
-        <div className="absolute bottom-0 p-4 border-t flex items-center left-0 w-full bg-white dark:bg-slate-800 dark:border-slate-700">
+        <div className={cn(
+          "border-t flex items-center left-0 w-full bg-white dark:bg-slate-800 dark:border-slate-700",
+          isCollapsed ? "p-2" : "p-4",
+          "sticky bottom-0 z-10"
+        )}>
           {isCollapsed ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -886,8 +895,8 @@ export function Sidebar({
               <div className="flex items-center space-x-3 overflow-hidden">
                 <div className="relative w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
                   <Image
-                      src={user?.user_metadata?.avatar || "/placeholder-avatar.jpg"}
-                      alt={`${user?.name || "User"}'s profile`}
+                    src={user?.user_metadata?.avatar || "/placeholder-avatar.jpg"}
+                    alt={`${user?.name || "User"}'s profile`}
                     width={40}
                     height={40}
                     className="object-cover w-full h-full rounded-full"
@@ -895,7 +904,7 @@ export function Sidebar({
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-slate-800 dark:text-white truncate">
-                    {user?.user_metadata.firstName + " " + user?.user_metadata.lastName || user?.user_metadata.name}
+                    {user?.user_metadata.firstName  || user?.user_metadata.name}
                   </p>
                   <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
                     {user?.email || "Email not available"}
