@@ -100,13 +100,13 @@ const SalesDashboard = () => {
       trend: "up",
     },
   ];
-  
+
   const salesData =
     monthly_stats?.map((stat: { month: string; convertedLeads: number }) => ({
       month: stat.month,
       sales: stat.convertedLeads,
     })) || [];
-    
+
   const recentSales = [
     {
       id: "OM",
@@ -157,11 +157,9 @@ const SalesDashboard = () => {
   }
 
   return (
-    <div
-      className={`p-6 transition-all duration-500 ease-in-out w-full 
+    <div className={`p-4 md:p-6 transition-all duration-300 ease-in-out 
       ${isCollapsed ? "md:ml-[80px]" : "md:ml-[250px]"}
-      overflow-hidden `}
-    >
+      max-w-8xl mx-auto`}>
       <div className="flex flex-col space-y-6 w-full">
         {/* Dashboard Header */}
         <div className="flex justify-between items-center mb-6 w-full">
@@ -172,12 +170,12 @@ const SalesDashboard = () => {
             Download
           </button>
         </div>
-        
+
         {/* Tabs - Only Analytics tab active */}
         <div className="border-b flex space-x-6 mb-6">
           <button className="pb-2 border-b-2 border-black font-medium text-sm">Analytics</button>
         </div>
-        
+
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {dashboardStats.map((stat, index) => (
@@ -196,7 +194,7 @@ const SalesDashboard = () => {
             </Card>
           ))}
         </div>
-        
+
         {/* Main Content */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Sales Chart */}
@@ -220,7 +218,7 @@ const SalesDashboard = () => {
               </div>
             </CardContent>
           </Card>
-          
+
           {/* Recent Sales */}
           <Card className="overflow-hidden border rounded-lg">
             <CardHeader className="p-6 pb-0">
