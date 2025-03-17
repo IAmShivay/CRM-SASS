@@ -53,52 +53,70 @@ const PlatformIntegrations: React.FC = () => {
     error: workspaceError,
   } = useGetActiveWorkspaceQuery();
 
-  // Updated platforms data with the specified integrations
+  // Mock data for platforms
   const [platforms, setPlatforms] = useState<PlatformIntegration[]>([
     {
       id: "1",
-      name: "MakeForms",
-      category: "Form Builder",
-      description: "Integrate with MakeForms to collect and manage form submissions from your website.",
+      name: "Salesforce",
+      category: "CRM",
+      description: "Integrate with Salesforce to synchronize leads and contacts.",
       status: "active",
-      documentationUrl: "https://makeforms.io/",
+      documentationUrl: "/docs/integrations/salesforce",
     },
     {
       id: "2",
-      name: "SwipePages",
-      category: "Landing Pages",
-      description: "Connect with SwipePages to create high-converting landing pages and collect lead data.",
+      name: "HubSpot",
+      category: "Marketing",
+      description: "Connect with HubSpot to manage your marketing campaigns and leads.",
       status: "active",
-      documentationUrl: "https://swipepages.com/",
+      documentationUrl: "/docs/integrations/hubspot",
     },
     {
       id: "3",
-      name: "WordPress Contact Form 7",
-      category: "Form Builder",
-      description: "Integrate WordPress Contact Form 7 submissions directly into your CRM system.",
+      name: "Zapier",
+      category: "Automation",
+      description: "Use Zapier to connect with thousands of apps and automate your workflows.",
       status: "active",
-      documentationUrl: "https://wordpress.org/plugins/contact-form-7/",
+      documentationUrl: "/docs/integrations/zapier",
     },
     {
       id: "4",
-      name: "Zoho CRM",
-      category: "CRM",
-      description: "Connect your leads and contacts with Zoho CRM to streamline your sales process.",
-      status: "coming-soon",
+      name: "Mailchimp",
+      category: "Email Marketing",
+      description: "Sync your email lists and campaigns with Mailchimp.",
+      status: "active",
+      documentationUrl: "/docs/integrations/mailchimp",
     },
     {
       id: "5",
-      name: "Brevo",
-      category: "Email Marketing",
-      description: "Sync your email marketing campaigns and contacts with Brevo (formerly Sendinblue).",
-      status: "coming-soon",
+      name: "Slack",
+      category: "Communication",
+      description: "Get real-time notifications and updates in your Slack channels.",
+      status: "active",
+      documentationUrl: "/docs/integrations/slack",
     },
     {
       id: "6",
-      name: "Fresh Desk",
-      category: "Customer Support",
-      description: "Integrate with Fresh Desk to manage customer support tickets and inquiries.",
+      name: "Google Analytics",
+      category: "Analytics",
+      description: "Track lead sources and conversion rates with Google Analytics.",
+      status: "beta",
+      documentationUrl: "/docs/integrations/google-analytics",
+    },
+    {
+      id: "7",
+      name: "Microsoft Dynamics",
+      category: "CRM",
+      description: "Synchronize lead data with Microsoft Dynamics CRM.",
       status: "coming-soon",
+    },
+    {
+      id: "8",
+      name: "Zoho CRM",
+      category: "CRM",
+      description: "Connect your leads and contacts with Zoho CRM.",
+      status: "beta",
+      documentationUrl: "/docs/integrations/zoho",
     }
   ]);
   
@@ -156,9 +174,10 @@ const PlatformIntegrations: React.FC = () => {
 
   return (
     <div
-    className={`transition-all duration-300 px-4 py-6 
-    ${isCollapsed ? "lg:ml-[80px] md:ml-[80px]" : "lg:ml-[250px] md:ml-[250px]"} w-auto`}
-  >
+      className={`grid align-center gap-0 md:gap-2 md:rounded-none rounded-[4px] transition-all duration-500 ease-in-out px-2 py-6 w-auto 
+      ${isCollapsed ? "md:ml-[80px]" : "md:ml-[250px]"}
+      overflow-hidden`}
+    >
       <Card className="w-full rounded-[16px] md:rounded-[4px] overflow-hidden">
         {/* Header */}
         <CardHeader className="flex flex-row justify-between items-center bg-gray-100 dark:bg-gray-800 md:bg-white md:dark:bg-gray-900">

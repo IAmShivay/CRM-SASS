@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Eye, EyeOff } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
@@ -41,6 +42,7 @@ export default function LoginPage(): JSX.Element {
   const [isResetMode, setIsResetMode] = useState<boolean>(false);
   const [isNewPasswordMode, setIsNewPasswordMode] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   // Form states
   const [loginForm, setLoginForm] = useState<LoginFormState>({
@@ -114,14 +116,21 @@ export default function LoginPage(): JSX.Element {
 
     setIsSubmitting(true);
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(resetForm.email, {
-        redirectTo: `${window.location.origin}/login?reset=true`,
-      });
+      const { error } = await supabase.auth.resetPasswordForEmail(
+        resetForm.email,
+        {
+          redirectTo: `${window.location.origin}/login?reset=true`,
+        }
+      );
       if (error) throw error;
       toast.success("Password reset instructions sent to your email");
       setIsResetMode(false);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to send reset instructions");
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to send reset instructions"
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -147,16 +156,18 @@ export default function LoginPage(): JSX.Element {
     setIsSubmitting(true);
     try {
       const { error } = await supabase.auth.updateUser({
-        password: newPasswordForm.password
+        password: newPasswordForm.password,
       });
 
       if (error) throw error;
 
       toast.success("Password updated successfully");
       router.push("/login");
-      window.location.reload() // Redirect to login after successful password reset
+      window.location.reload(); // Redirect to login after successful password reset
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to update password");
+      toast.error(
+        error instanceof Error ? error.message : "Failed to update password"
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -165,37 +176,41 @@ export default function LoginPage(): JSX.Element {
   // Handle form input changes
   const handleLoginChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setLoginForm(prev => ({
+    setLoginForm((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
-    setErrors(prev => ({
+    setErrors((prev) => ({
       ...prev,
-      [name]: undefined
+      [name]: undefined,
     }));
   };
 
   const handleResetChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setResetForm(prev => ({
+    setResetForm((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
-    setErrors(prev => ({
+    setErrors((prev) => ({
       ...prev,
-      [name]: undefined
+      [name]: undefined,
     }));
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
   };
 
   const handleNewPasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setNewPasswordForm(prev => ({
+    setNewPasswordForm((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
-    setErrors(prev => ({
+    setErrors((prev) => ({
       ...prev,
-      [name]: undefined
+      [name]: undefined,
     }));
   };
 
@@ -212,7 +227,9 @@ export default function LoginPage(): JSX.Element {
       }
 
       // Only check session if not in reset mode
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (session) {
         router.push("/dashboard");
       }
@@ -273,9 +290,7 @@ export default function LoginPage(): JSX.Element {
         <Card className="w-[400px]">
           <CardHeader>
             <CardTitle>Set New Password</CardTitle>
-            <CardDescription>
-              Please enter your new password
-            </CardDescription>
+            <CardDescription>Please enter your new password</CardDescription>
           </CardHeader>
           <form onSubmit={handleNewPasswordSubmit}>
             <CardContent className="space-y-4">
@@ -304,7 +319,9 @@ export default function LoginPage(): JSX.Element {
                   placeholder="••••••••"
                 />
                 {errors.confirmPassword && (
-                  <p className="text-sm text-red-500">{errors.confirmPassword}</p>
+                  <p className="text-sm text-red-500">
+                    {errors.confirmPassword}
+                  </p>
                 )}
               </div>
             </CardContent>
@@ -345,20 +362,31 @@ export default function LoginPage(): JSX.Element {
                 <p className="text-sm text-red-500">{errors.email}</p>
               )}
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 relative">
               <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                name="password"
-                value={loginForm.password}
-                onChange={handleLoginChange}
-                placeholder="••••••••"
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"} // Toggle type
+                  name="password"
+                  value={loginForm.password}
+                  onChange={handleLoginChange}
+                  placeholder="••••••••"
+                  className="pr-10" // Add padding to avoid text overlap with the icon
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-3 flex items-center text-gray-500"
+                  onClick={togglePasswordVisibility}
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
               {errors.password && (
                 <p className="text-sm text-red-500">{errors.password}</p>
               )}
             </div>
+
             <Button
               type="button"
               variant="link"

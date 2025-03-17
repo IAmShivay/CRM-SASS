@@ -15,6 +15,11 @@ export const workspaceApi = createApi({
       return headers;
     },
   }),
+  tagTypes: [
+    'Workspace',
+    'WorkspaceList',
+    'ActiveWorkspace'
+  ],
   endpoints: () => ({}),
   keepUnusedDataFor: 60,
   refetchOnReconnect: true,

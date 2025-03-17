@@ -203,14 +203,24 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
-import { X, Filter, Calendar, User, Phone, Mail, Tag } from "lucide-react";
+import {
+  X,
+  Filter,
+  Calendar,
+  User,
+  Phone,
+  Mail,
+  Tag,
+  Users,
+} from "lucide-react";
 
 interface FilterComponentProps {
   values: any;
   onChange: (values: any) => void;
   onReset: () => void;
-  owner: { id: string; name: string }[];  // Added proper type for owner
-  status: { id: string; name: string }[];  // Added proper type for status
+  owner: { id: string; name: string }[]; // Added proper type for owner
+  status: { id: string; name: string }[]; // Added proper type for status
+  leadSources: { id: string; name: string }[]; // Added leadsSource
 }
 
 export const FilterComponent: React.FC<FilterComponentProps> = ({
@@ -218,7 +228,8 @@ export const FilterComponent: React.FC<FilterComponentProps> = ({
   onChange,
   onReset,
   owner,
-  status
+  status,
+  leadSources,
 }) => {
   const updateFilter = (key: keyof any, value: string | boolean) => {
     onChange({
@@ -247,7 +258,7 @@ export const FilterComponent: React.FC<FilterComponentProps> = ({
       <CardContent className="pt-6">
         <div className="grid gap-6">
           {/* Basic Filters Section */}
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-4">
             <div className="space-y-2">
               <Label className="flex items-center gap-2">
                 <User className="h-4 w-4 text-muted-foreground" />
@@ -262,7 +273,35 @@ export const FilterComponent: React.FC<FilterComponentProps> = ({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Owners</SelectItem>
-                  {owner.map((item) => (
+                  {owner
+                    .filter(
+                      (status: { name: string | null }) =>
+                        status.name && status.name !== "null"
+                    )
+                    .map((item) => (
+                      <SelectItem key={item.id} value={item.name}>
+                        {item.name}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <Users className="h-4 w-4 text-muted-foreground" />
+                Leads sources
+              </Label>
+              <Select
+                value={values.leadsSource}
+                onValueChange={(value) => updateFilter("leadsSource", value)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select leads source" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All leads sources</SelectItem>
+                  {leadSources.map((item) => (
                     <SelectItem key={item.id} value={item.name}>
                       {item.name}
                     </SelectItem>
@@ -285,7 +324,8 @@ export const FilterComponent: React.FC<FilterComponentProps> = ({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Statuses</SelectItem>
-                  <SelectItem value="Arrived">Arrived</SelectItem> {/* New option added */}
+                  <SelectItem value="Arrived">Arrived</SelectItem>{" "}
+                  {/* New option added */}
                   {status.map((item) => (
                     <SelectItem key={item.id} value={item.name}>
                       {item.name}
@@ -294,7 +334,6 @@ export const FilterComponent: React.FC<FilterComponentProps> = ({
                 </SelectContent>
               </Select>
             </div>
-
 
             <div className="space-y-2">
               <Label className="flex items-center gap-2">
@@ -322,7 +361,7 @@ export const FilterComponent: React.FC<FilterComponentProps> = ({
           <Separator className="my-2" />
 
           {/* Advanced Filters Section */}
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-4">
             <div className="space-y-2">
               <Label className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-muted-foreground" />

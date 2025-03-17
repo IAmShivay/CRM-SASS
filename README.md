@@ -1,168 +1,239 @@
-<div align="center">
+# CRM Sales Platform
 
-# 🚀 Ultimate Sales CRM Platform
+A modern, full-stack CRM (Customer Relationship Management) platform built with Next.js, Supabase, and TypeScript. This platform helps sales teams manage leads, track interactions, and boost productivity through real-time notifications and analytics.
 
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://semver.org)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
-[![AI Powered](https://img.shields.io/badge/AI-Powered-purple.svg)](https://elevenlabs.io)
+## 🚀 Features
 
-### Your All-in-One AI-Enhanced Sales Management Solution
-*Streamline your sales process with AI-powered automation and intelligent follow-ups*
+- **Authentication & Authorization**
 
-[Getting Started](#getting-started) •
-[Features](#features) •
-[Documentation](#documentation) •
-[Support](#support)
+  - Secure user authentication with Supabase
+  - Role-based access control
+  - Workspace-based multi-tenancy
 
-![Divider](https://user-images.githubusercontent.com/41929050/61567048-13938600-aa33-11e9-9cbb-9b1a5e9cf4e9.png)
+- **Lead Management**
 
-</div>
+  - Real-time lead tracking
+  - Lead status updates
+  - Automated notifications
+  - Lead trend analysis
 
-## ✨ Highlights
+- **Dashboard**
 
-- 🏢 **Multi-Workspace Support** - Create and manage multiple workspaces
-- 👥 **Team Collaboration** - Invite members and assign roles
-- 🎯 **Lead Management** - Track and nurture leads effectively
-- 🔌 **Webhook Integration** - Receive leads from multiple sources
-- 🤖 **AI-Powered Follow-ups** - Automated email and call management
-- 🔄 **Flow Actions** - Custom automation workflows
-- 🔐 **Advanced Permissions** - Granular access control
-- 📊 **Analytics Dashboard** - Real-time performance metrics
+  - Interactive data visualization
+  - Performance metrics
+  - Custom widgets
+  - Real-time updates
 
-## Upcoming Features
-## 🤖 AI Integration Features
-### 🗣️ ElevenLabs Voice AI Integration
-- **Automated Call Follow-ups**
-  ```markdown
-  - Natural voice synthesis
-  - Multi-language support
-  - Custom voice cloning
-  - Sentiment analysis
-  - Real-time call transcription
-  ```
+- **Notifications**
+  - Real-time lead activity notifications
+  - Email notifications
+  - Toast notifications
+  - Read/unread status tracking
 
-### 📧 AI Email Automation
-- **Smart Email Follow-ups**
-  ```markdown
-  - Context-aware responses
-  - Personalized templates
-  - A/B testing
-  - Sentiment analysis
-  - Best time prediction
-  ```
+## 🛠️ Tech Stack
 
-## 🔄 Flow Actions
+- **Frontend:**
 
-### Workflow Automation
-```mermaid
-graph LR
-    A[Lead Created] --> B{Qualification Check}
-    B -->|Qualified| C[AI Email Follow-up]
-    B -->|High Value| D[AI Voice Call]
-    C --> E[Track Response]
-    D --> E
-    E --> F{Engagement Check}
-    F -->|Positive| G[Schedule Meeting]
-    F -->|Negative| H[Alternative Channel]
+  - Next.js 13+ (App Router)
+  - TypeScript
+  - React
+  - Redux (State Management)
+  - Tailwind CSS
+
+- **Backend:**
+
+  - Supabase (PostgreSQL)
+  - Next.js API Routes
+  - Node.js
+
+- **Authentication:**
+
+  - Supabase Auth
+
+- **Development Tools:**
+  - ESLint
+  - Prettier
+  - TypeScript
+  - Git
+
+## 📦 Project Structure
+
+```
+crm-sales/
+├── app/                 # Next.js 13+ App Router
+│   ├── (auth)/         # Authentication routes
+│   ├── (dashboard)/    # Dashboard routes
+│   ├── (home)/         # Home page routes
+│   └── providers.tsx    # Global providers
+├── components/         # Reusable components
+│   ├── ui/            # UI component library
+│   ├── dashboard/     # Dashboard components
+│   └── layout/        # Layout components
+├── hooks/             # Custom React hooks
+├── lib/               # Core utilities
+│   ├── store/         # State management
+│   ├── types/         # TypeScript types
+│   └── manager/       # Business logic
+├── pages/             # API routes
+└── utils/             # Helper functions
 ```
 
-### Available Flow Actions
-- **Lead Processing**
-  ```markdown
-  - Lead scoring
-  - Data enrichment
-  - Duplicate detection
-  - Territory assignment
-  ```
+## 🚦 Getting Started
 
-- **Communication Flows**
-  ```markdown
-  - Email sequences
-  - SMS campaigns
-  - Voice calls
-  - Social media engagement
-  ```
+### Prerequisites
 
-- **Follow-up Logic**
-  ```markdown
-  - Time-based triggers
-  - Behavior-based actions
-  - Multi-channel coordination
-  - A/B testing
-  ```
+- Node.js 18.x or higher
+- npm or yarn
+- Git
+- Supabase account
 
-[Previous sections remain the same...]
+### Environment Variables
 
-## 🎯 Core Features
+Create a `.env.local` file in the root directory with the following variables:
 
-### 🏢 Workspace Management
-[Previous content remains the same...]
-
-### 👥 User & Access Management
-[Previous content remains the same...]
-
-### 📈 Lead Management
-[Previous content remains the same...]
-
-### 🔌 Webhook System
-[Previous content remains the same...]
-
-## ⚡ AI Configuration
-
-### Voice AI Setup
-```javascript
-{
-  "elevenlabs": {
-    "api_key": "your_elevenlabs_api_key",
-    "voice_id": "custom_voice_id",
-    "settings": {
-      "stability": 0.8,
-      "similarity_boost": 0.7
-    }
-  }
-}
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 ```
 
-### Email AI Configuration
-```javascript
-{
-  "email_ai": {
-    "templates": ["follow_up", "meeting_request"],
-    "tone": "professional",
-    "language": "auto_detect",
-    "max_follow_ups": 3
-  }
-}
+### Installation
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/your-username/crm-sales.git
+   cd crm-sales
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
+
+3. Run the development server:
+
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
+
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## 🔧 Development
+
+### Code Style
+
+- Follow the ESLint configuration
+- Use TypeScript for type safety
+- Follow component naming conventions
+- Keep components small and focused
+- Use custom hooks for logic reuse
+
+### State Management
+
+- Use Redux for global state
+- Use React Query for server state
+- Implement local state with useState/useReducer
+- Follow the flux pattern
+
+### API Routes
+
+- Located in `/pages/api`
+- Follow RESTful conventions
+- Implement proper error handling
+- Use middleware for authentication
+
+## 🧪 Testing
+
+```bash
+# Run unit tests
+npm run test
+
+# Run e2e tests
+npm run test:e2e
+
+# Run lint
+npm run lint
 ```
 
-## 📊 Analytics & AI Insights
+## 📚 Documentation
 
-| Metric | Description |
-|--------|-------------|
-| 🎯 Response Rate | AI email campaign performance |
-| 📞 Call Success | Voice AI interaction success rate |
-| 💬 Sentiment Score | Customer response sentiment analysis |
-| ⏱️ Best Time | AI-predicted optimal contact times |
+- [Component Documentation](./docs/components.md)
+- [API Documentation](./docs/api.md)
+- [Database Schema](./docs/schema.md)
 
-[Previous sections remain the same...]
+## 🔐 Security
 
-## 🔄 Updates
+- All API routes are protected
+- Authentication using Supabase
+- CORS configuration
+- Rate limiting implemented
+- Input validation on all forms
+- XSS protection
+- CSRF protection
 
-We regularly ship new features and AI improvements. Stay updated:
+## 🚀 Deployment
 
-- Follow us on [Twitter](https:)
-- Join our [Slack Community](https:)
-- Subscribe to our [Newsletter](https:)
+1. Build the application:
+
+   ```bash
+   npm run build
+   # or
+   yarn build
+   ```
+
+
+
+## 📈 Performance Optimization
+
+- Implement proper caching strategies
+- Use Image optimization
+- Lazy loading of components
+- Code splitting
+- Bundle optimization
+
+## 🤝 Development Guidelines
+
+### Code Review Process
+
+- All changes must go through the internal code review process
+- Follow the team's branching strategy:
+  - `main` - production branch
+  - `develop` - development branch
+  - `feature/*` - feature branches
+  - `hotfix/*` - hotfix branches
+- Create detailed pull request descriptions using the company template
+
+### Development Workflow
+
+1. Create a JIRA ticket for the task
+2. Branch from `develop` using the correct naming convention
+3. Follow the coding standards and patterns established in the codebase
+4. Write/update tests as required
+5. Submit for code review
+6. Address review comments
+7. Merge after approval
+
+### Quality Standards
+
+- Maintain minimum 80% test coverage
+- Zero critical or high severity issues
+- Pass all linting rules
+- Update documentation for API changes
+- Follow secure coding guidelines
+
+## 📝 License
+
+This project is proprietary software. See the [LICENSE](LICENSE) file in the root directory for the full license text.
+
+All rights reserved. Unauthorized copying, modification, distribution, or use of this software is strictly prohibited.
+
 
 ---
 
-<div align="center">
-
-### Made with ❤️ and 🤖 for sales teams worldwide
-
-[Website](https:) • 
-[Documentation](https:) • 
-[GitHub](https:)
-
-</div>
+© 2024 [Your Company Name]. All Rights Reserved.

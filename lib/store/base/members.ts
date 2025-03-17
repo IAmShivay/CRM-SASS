@@ -14,6 +14,11 @@ export const membersApi = createApi({
       return headers;
     },
   }),
+  tagTypes: [
+    'Member',
+    'MemberByWorkspace',
+    'MemberList'
+  ],
   endpoints: () => ({}),
   keepUnusedDataFor: 60,
   refetchOnReconnect: true,

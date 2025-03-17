@@ -74,6 +74,23 @@ export const memberApi = membersApi.injectEndpoints({
         url: `?action=getWorkspaceMembers&workspaceId=${workspaceId}`,
         method: "GET",
       }),
+      providesTags: (result, error, workspaceId) => [
+        { type: 'MemberByWorkspace', id: workspaceId },
+        { type: 'MemberList', id: workspaceId },
+        { type: 'Member', id: 'LIST' }
+      ],
+    }),
+
+    // get member role
+    getMemberRole: builder.query<MembersResponse, string>({
+      query: (workspaceId) => ({
+        url: `?action=getMemberRole&workspaceId=${workspaceId}`,
+        method: "GET",
+      }),
+      providesTags: (result, error, workspaceId) => [
+        { type: 'MemberByWorkspace', id: workspaceId },
+        { type: 'Member', id: 'LIST' }
+      ],
     }),
 
     // Add a new member
@@ -83,15 +100,25 @@ export const memberApi = membersApi.injectEndpoints({
         method: "POST",
         body,
       }),
+      invalidatesTags: (result, error, arg) => [
+        { type: 'MemberByWorkspace', id: arg.workspaceId },
+        { type: 'MemberList', id: arg.workspaceId },
+        { type: 'Member', id: 'LIST' }
+      ],
     }),
 
-    // Update member details
     updateMember: builder.mutation<UpdateMemberResponse, UpdateMemberRequest>({
       query: ({ workspaceId, id, updates }) => ({
-        url: `workspace/${workspaceId}/members/${id}`,
-        method: "PATCH",
-        body: updates,
+        url: `?action=updateMemberRole&workspaceId=${workspaceId}&memberId=${id}`,
+        method: "PUT",
+        body: updates, // { role: "newRole" }
       }),
+      invalidatesTags: (result, error, arg) => [
+        { type: 'Member', id: arg.id },
+        { type: 'MemberByWorkspace', id: arg.workspaceId },
+        { type: 'MemberList', id: arg.workspaceId },
+        { type: 'Member', id: 'LIST' }
+      ],
     }),
 
     // Delete a member
@@ -100,6 +127,12 @@ export const memberApi = membersApi.injectEndpoints({
         url: `?action=removeMember&workspaceId=${workspaceId}&id=${id}`,
         method: "DELETE",
       }),
+      invalidatesTags: (result, error, arg) => [
+        { type: 'Member', id: arg.id },
+        { type: 'MemberByWorkspace', id: arg.workspaceId },
+        { type: 'MemberList', id: arg.workspaceId },
+        { type: 'Member', id: 'LIST' }
+      ],
     }),
 
     // Upload profile image
@@ -117,6 +150,10 @@ export const memberApi = membersApi.injectEndpoints({
           body: formData,
         };
       },
+      invalidatesTags: (result, error, arg) => [
+        { type: 'Member', id: arg.memberId },
+        { type: 'MemberByWorkspace', id: arg.workspaceId }
+      ],
     }),
 
     // Resend invitation
@@ -125,6 +162,11 @@ export const memberApi = membersApi.injectEndpoints({
         url: `?action=resendInvitation&workspaceId=${workspaceId}&id=${memberId}&email=${email} &status=${status}`,
         method: "POST",
       }),
+      invalidatesTags: (result, error, arg) => [
+        { type: 'Member', id: arg.memberId },
+        { type: 'MemberByWorkspace', id: arg.workspaceId },
+        { type: 'MemberList', id: arg.workspaceId }
+      ],
     }),
   }),
 });
@@ -132,6 +174,7 @@ export const memberApi = membersApi.injectEndpoints({
 // Export hooks for usage in components
 export const {
   useGetMembersQuery,
+  useGetMemberRoleQuery,
   useAddMemberMutation,
   useUpdateMemberMutation,
   useDeleteMemberMutation,

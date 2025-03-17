@@ -128,7 +128,7 @@ export default function ProfileSettingsPage() {
                 />
                 <AvatarFallback>
                   {profile.personalInfo.firstName[0]}
-                  {profile.personalInfo.lastName[0]}
+                  {/* {profile.personalInfo.lastName[0]} */}
                 </AvatarFallback>
               </Avatar>
               <Input 

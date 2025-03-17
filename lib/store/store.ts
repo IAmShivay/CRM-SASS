@@ -7,6 +7,7 @@ import { webhookApi } from "./base/webhooks";
 import { workspaceApi } from "./base/workspace";
 import { leadsApi } from "./base/leadsapi";
 import { statusApi } from "./base/status";
+import { TagsApi } from "./base/tags";
 import { membersApi } from "./base/members";
 import sidebarReducer from "./slices/sideBar";
 export const store = configureStore({
@@ -16,6 +17,8 @@ export const store = configureStore({
     [workspaceApi.reducerPath]: workspaceApi.reducer,
     [leadsApi.reducerPath]: leadsApi.reducer,
     [statusApi.reducerPath]: statusApi.reducer,
+    [TagsApi.reducerPath]: TagsApi.reducer,
+
     [membersApi.reducerPath]: membersApi.reducer,
     auth: authReducer,
     sidebar: sidebarReducer,
@@ -28,6 +31,8 @@ export const store = configureStore({
       .concat(workspaceApi.middleware)
       .concat(leadsApi.middleware)
       .concat(statusApi.middleware)
+      .concat(leadsApi.middleware)
+      .concat(TagsApi.middleware)
       .concat(membersApi.middleware),
 });
 

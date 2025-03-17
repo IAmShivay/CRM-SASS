@@ -88,18 +88,15 @@ export default async function handler(
             }
           }
           // Insert status into the database
-          const { data, error } = await supabase
-            .from("status")
-            .insert({
-              name,
-              color,
-              count_statistics: countInStatistics,
-              workspace_show: showInWorkspace,
-              work_id: workspaceId,
-              user_id: user.id,
-            })
-            .select("*")
-            .single();
+
+          const { data, error } = await supabase.from("status").insert({
+            name,
+            color,
+            count_statistics: countInStatistics,
+            workspace_show: showInWorkspace,
+            work_id: workspaceId,
+            user_id: user.id,
+          });
 
           if (error) {
             return res.status(400).json({ error });
@@ -168,7 +165,7 @@ export default async function handler(
           //     });
           //   }
           // }
-          console.log(name);
+          // console.log(name);
           // If we reach here, user is either the owner or an admin
           const { data, error } = await supabase
             .from("status")
@@ -187,6 +184,7 @@ export default async function handler(
 
           return res
             .status(200)
+
             .json({ message: "Status updated successfully", data });
         } catch (error) {
           console.error("Unexpected error:", error);

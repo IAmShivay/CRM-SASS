@@ -16,31 +16,37 @@ export function Navbar() {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // Get the initial session
+    const fetchSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      setUser(data.session?.user ?? null);
+    };
+    
+    fetchSession();
+
+    // Set up the auth state change listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => subscription.unsubscribe();
+    // Proper cleanup to avoid memory leaks
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const navigation = [
     { name: "Dashboard", href: "/dashboard" },
+    { name: "Leads Sources", href: "/leads-sources" },
     { name: "Leads", href: "/leads" },
-    { name: "Messages", href: "/messages" },
-    { name: "Calls", href: "/calls" },
+    { name: "Contact", href: "/contact" },
     { name: "Analytics", href: "/analytics" },
   ];
 
   return (
     <>
       {/* Mobile Navbar */}
-      <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:hidden fixed top-0 left-0 right-0 z-50">
+      <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:hidden lg:hidden fixed top-0 left-0 right-0 z-50 ">
         <div className="flex h-16 items-center justify-between px-4">
           {/* Logo */}
           <Link href="/" className="font-bold text-xl">
@@ -50,25 +56,24 @@ export function Navbar() {
           <div className="flex items-center space-x-4">
             {/* Theme Toggle */}
             <ThemeToggle />
-            
+
             {/* Menu Button */}
             <Sheet>
-              <SheetTrigger asChild>
+              <SheetTrigger>
                 <Button variant="ghost" size="icon">
                   <Menu className="h-5 w-5" />
                   <span className="sr-only">Toggle menu</span>
                 </Button>
               </SheetTrigger>
+
               <SheetContent side="left" className="w-64 p-0">
                 <div className="flex flex-col h-full">
-                  {/* Header */}
                   <div className="border-b p-4">
                     <Link href="/" className="font-bold text-xl">
                       CRM
                     </Link>
                   </div>
 
-                  {/* Navigation Links */}
                   <div className="flex-1 overflow-y-auto py-4">
                     <nav className="space-y-1 px-2">
                       {navigation.map((item) => (
@@ -87,7 +92,6 @@ export function Navbar() {
                     </nav>
                   </div>
 
-                  {/* User Profile in Sidebar */}
                   {user && (
                     <div className="border-t p-4">
                       <UserNav />

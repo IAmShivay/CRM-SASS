@@ -44,7 +44,7 @@ export const authApi = api.injectEndpoints({
       }),
     }),
     getProfile: builder.query<AuthResponse["user"], void>({
-      query: () => "auth/profile",
+      query: () => "/auth/profile",
     }),
   }),
 });

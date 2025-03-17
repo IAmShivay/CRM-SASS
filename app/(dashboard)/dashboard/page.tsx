@@ -11,7 +11,13 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Award, Users, TrendingUp, IndianRupee, Loader2 } from "lucide-react";
-import { useGetActiveWorkspaceQuery, useGetCountByWorkspaceQuery, useGetQualifiedCountQuery, useGetRevenueByWorkspaceQuery, useGetROCByWorkspaceQuery } from "@/lib/store/services/workspace";
+import {
+  useGetActiveWorkspaceQuery,
+  useGetCountByWorkspaceQuery,
+  useGetQualifiedCountQuery,
+  useGetRevenueByWorkspaceQuery,
+  useGetROCByWorkspaceQuery,
+} from "@/lib/store/services/workspace";
 import { useGetWebhooksBySourceIdQuery } from "@/lib/store/services/webhooks";
 import { UserPlus } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
@@ -27,37 +33,39 @@ interface Workspace {
 }
 
 const SalesDashboard = () => {
-  const isCollapsed = useSelector((state: RootState) => state.sidebar.isCollapsed);
-  const { data: activeWorkspace, isLoading: isWorkspaceLoading } = useGetActiveWorkspaceQuery();
-  const { data: workspaceRevenue, isLoading: isRevenueLoading } = useGetRevenueByWorkspaceQuery(
-    activeWorkspace?.data?.id,
-    {
-      skip: !activeWorkspace?.data?.id,
-    }
+  const isCollapsed = useSelector(
+    (state: RootState) => state.sidebar.isCollapsed
   );
+  const { data: activeWorkspace, isLoading: isWorkspaceLoading } =
+    useGetActiveWorkspaceQuery();
+  const { data: workspaceRevenue, isLoading: isRevenueLoading } =
+    useGetRevenueByWorkspaceQuery(activeWorkspace?.data?.id, {
+      skip: !activeWorkspace?.data?.id,
+    });
   const { data: ROC, isLoading: isRocLoading } = useGetROCByWorkspaceQuery(
     activeWorkspace?.data?.id,
     {
       skip: !activeWorkspace?.data?.id,
     }
   );
-  const { data: qualifiedCount, isLoading: isQualifiedCountLoading } = useGetQualifiedCountQuery(
-    activeWorkspace?.data?.id,
-    { skip: !activeWorkspace?.data?.id }
-  );
-  const { data: workspaceCount, isLoading: isCountLoading } = useGetCountByWorkspaceQuery(
-    activeWorkspace?.data?.id,
-    { skip: !activeWorkspace?.data?.id }
-  );
-  const { data: webhooks, isLoading: isWebhooksLoading } = useGetWebhooksBySourceIdQuery(
-    {
-      workspaceId: activeWorkspace?.data?.id,
-      id: ROC?.top_source_id // Using the top source ID from ROC data
-    },
-    {
-      skip: !activeWorkspace?.data?.id || !ROC?.top_source_id,
-    }
-  );
+  const { data: qualifiedCount, isLoading: isQualifiedCountLoading } =
+    useGetQualifiedCountQuery(activeWorkspace?.data?.id, {
+      skip: !activeWorkspace?.data?.id,
+    });
+  const { data: workspaceCount, isLoading: isCountLoading } =
+    useGetCountByWorkspaceQuery(activeWorkspace?.data?.id, {
+      skip: !activeWorkspace?.data?.id,
+    });
+  const { data: webhooks, isLoading: isWebhooksLoading } =
+    useGetWebhooksBySourceIdQuery(
+      {
+        workspaceId: activeWorkspace?.data?.id,
+        id: ROC?.top_source_id, // Using the top source ID from ROC data
+      },
+      {
+        skip: !activeWorkspace?.data?.id || !ROC?.top_source_id,
+      }
+    );
   const { arrivedLeadsCount } = workspaceCount || 0;
   const isLoading = isWorkspaceLoading || isRevenueLoading;
   const updatedRevenue = workspaceRevenue?.totalRevenue.toFixed(2);
@@ -66,40 +74,82 @@ const SalesDashboard = () => {
   const dashboardStats = [
     {
       icon: <IndianRupee className="text-green-500" />,
-      title: "Revenue",
+      title: "Total Revenue",
       value: updatedRevenue || "0",
       change: workspaceRevenue?.change || "+0%",
+      trend: "up",
     },
     {
       icon: <UserPlus className="text-orange-500" />,
-      title: "Qualified Leads",
+      title: "Subscriptions",
       value: qualifiedCount?.qualifiedLeadsCount || "0",
+      change: "+15% from last month",
+      trend: "up",
     },
     {
       icon: <Users className="text-blue-500" />,
-      title: "New Leads",
+      title: "Sales",
       value: arrivedLeadsCount || 0,
-      change: "+8.3%",
+      change: "+18% from last month",
+      trend: "up",
     },
     {
       icon: <TrendingUp className="text-purple-500" />,
-      title: "Conversion Rate",
-      value: `${ROC?.conversion_rate}%` || 0,
-      change: "+3.2%",
-    },
-    {
-      icon: <Award className="text-yellow-500" />,
-      title: "Top Performing Sources",
-      value: webhooks?.name,
-      change: "5 Deals",
+      title: "Active Now",
+      value: `${ROC?.conversion_rate || 0}`,
+      change: "+20% since last hour",
+      trend: "up",
     },
   ];
-  const salesData = monthly_stats?.map((stat: { month: string; convertedLeads: number }) => ({
-    month: stat.month,
-    sales: stat.convertedLeads,
-  })) || [];
+  
+  const salesData =
+    monthly_stats?.map((stat: { month: string; convertedLeads: number }) => ({
+      month: stat.month,
+      sales: stat.convertedLeads,
+    })) || [];
+    
+  const recentSales = [
+    {
+      id: "OM",
+      name: "Olivia Martin",
+      email: "olivia.martin@gmail.com",
+      amount: "+$1,999.00"
+    },
+    {
+      id: "JL",
+      name: "Jackson Lee",
+      email: "jackson.lee@gmail.com",
+      amount: "+$39.00"
+    },
+    {
+      id: "IN",
+      name: "Isabella Nguyen",
+      email: "isabella.nguyen@gmail.com",
+      amount: "+$299.00"
+    },
+    {
+      id: "WK",
+      name: "William Kim",
+      email: "will@gmail.com",
+      amount: "+$99.00"
+    },
+    {
+      id: "SD",
+      name: "Sofia Davis",
+      email: "sofia.davis@gmail.com",
+      amount: "+$39.00"
+    }
+  ];
 
-  if (isLoading || isCountLoading || isRevenueLoading || isRocLoading || isWorkspaceLoading || isQualifiedCountLoading || isWebhooksLoading) {
+  if (
+    isLoading ||
+    isCountLoading ||
+    isRevenueLoading ||
+    isRocLoading ||
+    isWorkspaceLoading ||
+    isQualifiedCountLoading ||
+    isWebhooksLoading
+  ) {
     return (
       <div className="w-full h-screen flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -109,47 +159,96 @@ const SalesDashboard = () => {
 
   return (
     <div
-    className={`transition-all duration-300 px-4 py-6 
-    ${isCollapsed ? "lg:ml-[80px] md:ml-[80px]" : "lg:ml-[250px] md:ml-[250px]"} w-auto`}
-  >
-      <div className="grid grid-cols-1 xs:grid-cols-3 md:grid-cols-5 gap-4 sm:gap-6">
-        {dashboardStats.map((stat, index) => (
-          <Card key={index} className="hover:shadow-md transition-shadow">
-            <CardContent className="p-4 sm:p-6 flex items-center space-x-4 sm:space-x-6">
-              <div className="shrink-0">
-                {stat.icon}
-              </div>
-              <div className="min-w-0 flex-grow">
-                <p className="text-xs sm:text-sm text-muted-foreground truncate mb-1">
-                  {stat.title}
-                </p>
-                <p className="text-lg sm:text-xl font-semibold truncate cursor-pointer" onClick={() => console.log("clicked")}>
-                  {stat.value}
-                </p>
+      className={`p-6 transition-all duration-500 ease-in-out w-full 
+      ${isCollapsed ? "md:ml-[80px]" : "md:ml-[250px]"}
+      overflow-hidden `}
+    >
+      <div className="flex flex-col space-y-6 w-full">
+        {/* Dashboard Header */}
+        <div className="flex justify-between items-center mb-6 w-full">
+          <div className="flex items-center space-x-4">
+            <h1 className="text-2xl font-bold">Dashboard</h1>
+          </div>
+          <button className="bg-black hover:bg-gray-800 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
+            Download
+          </button>
+        </div>
+        
+        {/* Tabs - Only Analytics tab active */}
+        <div className="border-b flex space-x-6 mb-6">
+          <button className="pb-2 border-b-2 border-black font-medium text-sm">Analytics</button>
+        </div>
+        
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {dashboardStats.map((stat, index) => (
+            <Card key={index} className="overflow-hidden border rounded-lg">
+              <CardContent className="p-6">
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm text-gray-500">{stat.title}</p>
+                  <div className="flex items-baseline">
+                    <span className="text-2xl font-bold">{stat.value}</span>
+                    <span className={`ml-2 text-xs ${stat.trend === 'up' ? 'text-green-500' : 'text-red-500'}`}>
+                      {stat.change}
+                    </span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        
+        {/* Main Content */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Sales Chart */}
+          <Card className="md:col-span-2 overflow-hidden border rounded-lg">
+            <CardHeader className="p-6 pb-0">
+              <CardTitle className="text-lg font-medium">Overview</CardTitle>
+            </CardHeader>
+            <CardContent className="p-6">
+              <div className="w-full h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={salesData}
+                    margin={{ top: 5, right: 5, bottom: 25, left: 5 }}
+                  >
+                    <XAxis dataKey="month" />
+                    <YAxis />
+                    <Tooltip />
+                    <Bar dataKey="sales" fill="#0f172a" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
             </CardContent>
           </Card>
-        ))}
+          
+          {/* Recent Sales */}
+          <Card className="overflow-hidden border rounded-lg">
+            <CardHeader className="p-6 pb-0">
+              <CardTitle className="text-lg font-medium">Recent Sales</CardTitle>
+              <p className="text-sm text-gray-500">You made 265 sales this month.</p>
+            </CardHeader>
+            <CardContent className="p-6">
+              <div className="space-y-6">
+                {recentSales.map((sale) => (
+                  <div key={sale.email} className="flex items-center">
+                    <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-xs font-medium mr-3">
+                      {sale.id}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium">{sale.name}</p>
+                      <p className="text-xs text-gray-500">{sale.email}</p>
+                    </div>
+                    <div className="text-sm font-medium text-green-600">
+                      {sale.amount}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-
-      {/* Sales Chart */}
-      <Card className="w-full mt-6">
-        <CardHeader className="p-4 sm:p-6">
-          <CardTitle className="text-base sm:text-lg">Monthly Sales Performance</CardTitle>
-        </CardHeader>
-        <CardContent className="p-4 sm:p-6">
-          <div className="w-full h-[250px] sm:h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={salesData} margin={{ top: 5, right: 5, bottom: 5, left: 0 }}>
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="sales" fill="#8884d8" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 };

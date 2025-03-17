@@ -14,6 +14,11 @@ export const statusApi = createApi({
       return headers;
     },
   }),
+  tagTypes: [
+    'Status',
+    'StatusByWorkspace',
+    'StatusList'
+  ],
   endpoints: () => ({}),
   keepUnusedDataFor: 60,
   refetchOnReconnect: true,

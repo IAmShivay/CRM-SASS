@@ -14,6 +14,11 @@ export const webhookApi = createApi({
       return headers;
     },
   }),
+  tagTypes: [
+    'Webhook',
+    'WebhookByWorkspace',
+    'WebhookSource'
+  ],
   endpoints: () => ({}),
   keepUnusedDataFor: 60,
   refetchOnReconnect: true,

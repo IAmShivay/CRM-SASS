@@ -119,24 +119,82 @@ export default async function handler(
       const token = authHeader.split(" ")[1];
       switch (action) {
         case "getWebhooks": {
-          // Retrieve session and user details
           const {
             data: { user },
           } = await supabase.auth.getUser(token);
           if (!user) {
             return res.status(401).json({ error: AUTH_MESSAGES.UNAUTHORIZED });
           }
-          // Fetch webhooks for the user ID
-          const { data, error } = await supabase
+          
+          // Fetch webhooks for the workspace
+          const { data: webhooks, error: webhookError } = await supabase
             .from("webhooks")
             .select("*")
             .eq("workspace_id", workspace_id);
-          // .eq("user_id", user.id);
-
-          if (error) {
-            return res.status(400).json({ error });
+            
+          if (webhookError) {
+            return res.status(400).json({ error: webhookError });
           }
-          return res.status(200).json({ data });
+          
+          const { data: leads, error: leadsError } = await supabase
+            .from("leads")
+            .select("id, source, status")
+            .eq("work_id", workspace_id);
+            
+          if (leadsError) {
+            return res.status(400).json({ error: leadsError });
+          }
+          const leadMetrics = {};
+          
+          leads.forEach(lead => {
+            if (!leadMetrics[lead.source]) {
+              leadMetrics[lead.source] = {
+                totalLeads: 0,
+                qualifiedLeads: 0,
+                processingLeads: 0
+              };
+            }
+            
+            leadMetrics[lead.source].totalLeads++;
+            
+            // Check if status indicates "qualified" (you'll need to adjust this based on your actual status values)
+            const status = typeof lead.status === 'string' ? JSON.parse(lead.status) : lead.status;
+            if (status && status.name === "Qualified") {
+              leadMetrics[lead.source].qualifiedLeads++;
+            }
+            
+            // Count as "processing" if it has any status other than default/empty
+            if (status && status.name && status.name !== "Not Reachable/Responding") {
+              leadMetrics[lead.source].processingLeads++;
+            }
+          });
+          
+          // Calculate rates and add metrics to response
+          const webhooksWithMetrics = webhooks.map(webhook => {
+            const source = webhook.type; // Assuming the webhook type corresponds to the lead source
+            const metrics = leadMetrics[source] || { totalLeads: 0, qualifiedLeads: 0, processingLeads: 0 };
+            
+            const qualificationRate = metrics.totalLeads > 0 
+              ? (metrics.qualifiedLeads / metrics.totalLeads * 100).toFixed(2) 
+              : 0;
+              
+            const processingRate = metrics.totalLeads > 0 
+              ? (metrics.processingLeads / metrics.totalLeads * 100).toFixed(2) 
+              : 0;
+
+            return {
+              ...webhook,
+              metrics: {
+                totalLeads: metrics.totalLeads,
+                qualificationRate: `${qualificationRate}%`,
+                processingRate: `${processingRate}%`,
+                qualifiedLeads: metrics.qualifiedLeads,
+                processingLeads: metrics.processingLeads
+              }
+            };
+          });
+          
+          return res.status(200).json({ data: webhooksWithMetrics });
         }
         case "getWebhooksBySourceId": {
           const { sourceId, workspaceId } = query;
@@ -159,17 +217,18 @@ export default async function handler(
           // Query the webhooks table for matching webhook
           const { data, error } = await supabase
             .from("webhooks")
-            .select("id, name")
-            // .eq("user_id", user.id)
+            .select("id, name,type")
             .eq("webhook_url", webhookUrl);
 
           if (error) {
             return res.status(400).json({ error: error.message });
           }
-          console.log(data);
+          console.log("dat", data);  
           // If a matching webhook is found, return its name
           if (data && data.length > 0) {
-            return res.status(200).json({ name: data[0].name });
+            return res
+              .status(200)
+              .json({ id: data[0].id, name: data[0].name, type: data[0].type });
           }
 
           // If no webhook matches, return a suitable response
@@ -235,7 +294,7 @@ export default async function handler(
               if (error) {
                 return res.status(400).json({ error: error.message });
               }
-
+ 
               return res.status(200).json({ data });
             }
 
@@ -420,6 +479,7 @@ export default async function handler(
 
             // Check if the user owns the webhook
             if (user_id === user.id) {
+              console.log("enter");
               const { data, error } = await supabase
                 .from("webhooks")
                 .update({ name, type, description })

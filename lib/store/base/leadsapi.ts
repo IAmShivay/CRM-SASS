@@ -1,5 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { supabase } from "../../supabaseClient";
+
+// Define tag types for the API
 export const leadsApi = createApi({
   reducerPath: "/api/leads/",
   baseQuery: fetchBaseQuery({
@@ -14,7 +16,14 @@ export const leadsApi = createApi({
       return headers;
     },
   }),
+  tagTypes: [
+    'Lead', 
+    'LeadNotification', 
+    'LeadByWorkspace', 
+    'LeadByUser', 
+    'LeadNotes'
+  ],
+  keepUnusedDataFor: 60,
   refetchOnReconnect: true,
   endpoints: () => ({}),
-  tagTypes: ["Leads"],
 });

@@ -32,25 +32,47 @@ export const statusApis = statusApi.injectEndpoints({
         method: "POST",
         body: statusData,
       }),
+      invalidatesTags: (result, error, arg) => [
+        { type: 'Status', id: 'LIST' },
+        { type: 'StatusByWorkspace', id: arg.workspaceId },
+        { type: 'StatusList', id: arg.workspaceId }
+      ],
     }),
-    updateStatus: builder.mutation<void, { id: any; updatedStatus: any }>({
+    updateStatus: builder.mutation<void, { id: string; updatedStatus: any; workspaceId: string }>({
       query: ({ id, ...updatedStatus }) => ({
         url: `?action=updateStatus&id=${id}`,
         method: "PUT",
         body: updatedStatus,
       }),
+      invalidatesTags: (result, error, arg) => [
+        { type: 'Status', id: arg.id },
+        { type: 'Status', id: 'LIST' },
+        { type: 'StatusByWorkspace', id: arg.workspaceId },
+        { type: 'StatusList', id: arg.workspaceId }
+      ],
     }),
-    deleteStatus: builder.mutation<void, { id: any; workspace_id: string }>({
+    deleteStatus: builder.mutation<void, { id: string; workspace_id: string }>({
       query: ({ id, workspace_id }) => ({
         url: `?action=deleteStatus&id=${id}`,
         method: "DELETE",
       }),
+      invalidatesTags: (result, error, arg) => [
+        { type: 'Status', id: arg.id },
+        { type: 'Status', id: 'LIST' },
+        { type: 'StatusByWorkspace', id: arg.workspace_id },
+        { type: 'StatusList', id: arg.workspace_id }
+      ],
     }),
-    getStatus: builder.query<Status, any>({
+    getStatus: builder.query<Status, string>({
       query: (workspaceId) => ({
         url: `?action=getStatus&workspaceId=${workspaceId}`,
         method: "GET",
       }),
+      providesTags: (result, error, arg) => [
+        { type: 'StatusByWorkspace', id: arg },
+        { type: 'StatusList', id: arg },
+        { type: 'Status', id: 'LIST' }
+      ],
     }),
   }),
 });

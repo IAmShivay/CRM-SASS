@@ -30,7 +30,7 @@ import {
   IndianRupee
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { useSelector } from "react-redux";
+import { useSelector,shallowEqual } from "react-redux";
 import { RootState } from "@/lib/store/store";
 import { useGetActiveWorkspaceQuery, useGetRevenueByWorkspaceQuery, useGetROCByWorkspaceQuery, useGetCountByWorkspaceQuery, useGetWorkspaceDetailsAnalyticsQuery } from '@/lib/store/services/workspace';
 import { useGetLeadsByWorkspaceQuery } from "@/lib/store/services/leadsApi";
@@ -61,7 +61,7 @@ interface AnalyticsData {
 const CHART_COLORS = ['#0088FE', '#f1c232', '#38761d', '#FF8042'];
 
 export default function AdvancedAnalyticsDashboard() {
-  const isCollapsed = useSelector((state: RootState) => state.sidebar.isCollapsed);
+  const isCollapsed = useSelector((state: RootState) => state.sidebar.isCollapsed, shallowEqual);
   const { data: activeWorkspace, isLoading: isLoadingWorkspace } = useGetActiveWorkspaceQuery();
   const { data: analyticsDetails, isLoading: isLoadingAnalytics } = useGetRevenueByWorkspaceQuery(
     activeWorkspace?.data?.id,
