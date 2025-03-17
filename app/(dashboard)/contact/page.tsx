@@ -527,116 +527,38 @@ export default function ContactPage() {
 
   return (
     <div
-      className={`transition-all duration-500 ease-in-out px-4 py-6  ${
+      className={`transition-all duration-300 ease-in-out px-4 py-6 ${
         isCollapsed ? "md:ml-[80px]" : "md:ml-[250px]"
-      } w-auto overflow-hidden`}
+      } w-auto overflow-hidden bg-background`}
     >
-      <div className="w-full rounded-[16px] md:rounded-[4px]">
-        <div className="md:bg-white bg-gray-100 dark:bg-gray-800 flex items-center justify-between col-start-1 col-end-7 p-3 md:p-0">
-          <div className="flex gap-2">
-            <div className="md:hidden lg:hidden text-gray-900 dark:text-gray-100">
-              <MessageSquare />
+      <div className="w-full rounded-lg">
+        <div className="flex items-center justify-between p-3 md:p-4 border-b mb-4">
+          <div className="flex items-center gap-2">
+            <div className="md:hidden text-foreground">
+              <MessageSquare className="h-5 w-5" />
             </div>
-            <CardTitle className="flex mr-2 text-md md:text-xl lg:text-2xl text-gray-900 dark:text-gray-100">
-              Contact
-            </CardTitle>
+            <h1 className="text-xl md:text-2xl font-semibold text-foreground">
+              Contact Management
+            </h1>
           </div>
         </div>
 
-        {/* <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Contacts</h1>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button className="flex items-center gap-2">
-                <UserPlus className="h-4 w-4" />
-                Add Contact
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Add New Contact</DialogTitle>
-              </DialogHeader>
-              <form onSubmit={handleAddContact} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Name</Label>
-                  <Input
-                    id="name"
-                    value={newContact.name}
-                    onChange={(e) =>
-                      setNewContact({ ...newContact, name: e.target.value })
-                    }
-                    placeholder="Enter name"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={newContact.email}
-                    onChange={(e) =>
-                      setNewContact({ ...newContact, email: e.target.value })
-                    }
-                    placeholder="Enter email"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Phone</Label>
-                  <Input
-                    id="phone"
-                    value={newContact.phone}
-                    onChange={(e) =>
-                      setNewContact({ ...newContact, phone: e.target.value })
-                    }
-                    placeholder="Enter phone number"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="status">Status</Label>
-                  <Select
-                    value={newContact.status}
-                    onValueChange={(value) =>
-                      setNewContact({ ...newContact, status: value })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Proposal Sent">Proposal Sent</SelectItem>
-                      <SelectItem value="Inactive">Inactive</SelectItem>
-                      <SelectItem value="Pending">Pending</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <Button type="submit" className="w-full">
-                  Add Contact
-                </Button>
-              </form>
-            </DialogContent>
-          </Dialog>
-        </div> */}
-
         {/* Filters */}
-        <div className="flex flex-col md:flex-row  gap-4 items-center">
+        <div className="flex flex-col md:flex-row gap-4 items-center mb-6">
           {/* Search Input */}
-          <div className="md:flex-1 relative w-full mt-4 md:mt-0">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
+          <div className="md:flex-1 relative w-full">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search contacts..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-8"
+              className="pl-9 bg-background border-border"
             />
           </div>
 
           {/* Status Filter Dropdown */}
-
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="md:w-[180px] w-full">
+            <SelectTrigger className="md:w-[180px] w-full bg-background border-border">
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
             <SelectContent>
@@ -657,41 +579,40 @@ export default function ContactPage() {
         </div>
 
         {/* Contacts Table */}
-        <div className="border rounded-lg mt-4">
+        <div className="border rounded-lg overflow-hidden bg-card">
           <div className="w-full overflow-x-auto">
-            <Table className="min-w-full border-collapse table-auto">
-              <TableHeader className="hidden md:table-header-group">
+            <Table className="min-w-full">
+              <TableHeader className="hidden md:table-header-group bg-muted/50">
                 <TableRow>
                   {selectedHeaders?.map((header) => (
                     <TableHead
                       key={header}
-                      className="relative text-center font-semibold"
-                      style={{ width: columnWidths[header] }} // Apply dynamic width
+                      className="relative text-center font-medium text-muted-foreground"
+                      style={{ width: columnWidths[header] }}
                     >
                       <Resizable
                         width={columnWidths[header]}
                         height={30}
                         axis="x"
-                        resizeHandles={["e"]} // Enables resizing from the right edge
+                        resizeHandles={["e"]}
                         onResize={handleResize(header)}
                       >
                         <div
                           className="flex justify-center items-center cursor-pointer"
-                          style={{ width: "100%" }} // Ensure div stretches fully
+                          style={{ width: "100%" }}
                         >
                           <span onClick={() => toggleDropdown(header)}>
                             {header}
                           </span>
-                          {/* Resize Handle */}
-                          <span className="w-2 h-full cursor-ew-resize bg-gray-300"></span>
+                          <span className="w-2 h-full cursor-ew-resize opacity-30"></span>
                         </div>
                       </Resizable>
 
                       {/* Dropdown menu for removing column */}
                       {dropdownOpenRemove === header && (
-                        <div className="absolute right-0 mt-2 bg-white border shadow-lg rounded-md p-2 w-40 z-50">
+                        <div className="absolute right-0 mt-2 bg-popover border shadow-md rounded-md p-2 w-40 z-50">
                           <button
-                            className="w-full text-left px-2 py-1 hover:bg-red-500 hover:text-white rounded-md"
+                            className="w-full text-left px-2 py-1 hover:bg-destructive hover:text-destructive-foreground rounded-md text-sm transition-colors"
                             onClick={() => removeColumn(header)}
                           >
                             Hide Column
@@ -703,14 +624,14 @@ export default function ContactPage() {
                   <TableHead className="text-center">
                     <button
                       onClick={() => setDropdownOpen(!dropdownOpen)}
-                      className="p-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white"
+                      className="p-2 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground transition-colors"
                     >
                       <Plus className="w-4 h-4" />
                     </button>
                     {dropdownOpen && (
-                      <div className="absolute right-0 mt-2 bg-white border shadow-lg rounded-md p-2 w-40 z-50">
+                      <div className="absolute right-0 mt-2 bg-popover border shadow-md rounded-md p-2 w-40 z-50">
                         <select
-                          className="w-full border p-2 rounded"
+                          className="w-full border p-2 rounded text-sm bg-background"
                           onChange={(e) => {
                             addColumn(e);
                             setDropdownOpen(false);
@@ -866,6 +787,7 @@ export default function ContactPage() {
                                 autoFocus
                               />
                             ) : (
+                              // Normal mode: Show phone number
                               <div className="inline-block group relative">
                                 {/* Phone Number */}
                                 <span
