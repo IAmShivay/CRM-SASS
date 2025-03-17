@@ -527,9 +527,9 @@ export default function ContactPage() {
 
   return (
     <div
-      className={`transition-all duration-300 ease-in-out px-4 py-6 ${
-        isCollapsed ? "md:ml-[80px]" : "md:ml-[250px]"
-      } w-auto overflow-hidden bg-background`}
+      className={`p-6 transition-all duration-500 ease-in-out w-full 
+      ${isCollapsed ? "md:ml-[80px]" : "md:ml-[250px]"}
+      overflow-hidden `}
     >
       <div className="w-full rounded-lg">
         <div className="flex items-center justify-between p-3 md:p-4 border-b mb-4">
@@ -558,7 +558,7 @@ export default function ContactPage() {
 
           {/* Status Filter Dropdown */}
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="md:w-[180px] w-full bg-background border-border">
+            <SelectTrigger className="md:w-[180px] bg-background border-border">
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
             <SelectContent>
@@ -657,20 +657,18 @@ export default function ContactPage() {
               <TableBody>
                 {/* Mobile veiw */}
                 {filteredContacts.map((contact) => (
-                  <>
+                  <React.Fragment key={contact.id}>
                     <TableRow
-                      key={contact.id}
-                      className="md:hidden lg:hidden flex items-center p-3 justify-between gap-8"
+                      className="md:hidden flex items-center p-4 justify-between gap-4 border-b hover:bg-muted/50 transition-colors"
                     >
-                      <div className="flex flex-col gap-2 ">
+                      <div className="flex flex-col gap-2 flex-1">
                         {selectedHeaders?.includes("Name") && (
-                          <div className=" left-0 bg-white dark:bg-gray-900 z-10 font-medium text-[1rem]  text-start  cursor-pointer">
+                          <div className="font-medium text-foreground">
                             {editNameId === contact.id ? (
-                              // Editing mode: Show input field
                               <input
                                 type="text"
                                 placeholder="Enter Name..."
-                                className="px-2 py-1 border rounded-md w-full"
+                                className="px-3 py-2 border rounded-md w-full bg-background text-foreground"
                                 value={nameInfo}
                                 onChange={(e) => setNameInfo(e.target.value)}
                                 onKeyDown={(e) => {
@@ -678,25 +676,24 @@ export default function ContactPage() {
                                     handleUpdate(contact.id, {
                                       name: nameInfo,
                                     });
-                                    setEditNameId(null); // Exit edit mode after updating
+                                    setEditNameId(null);
                                   } else if (e.key === "Escape") {
                                     setEditNameId(null);
-                                    setNameInfo(contact.Name || ""); // Reset on cancel
+                                    setNameInfo(contact.Name || "");
                                   }
                                 }}
                                 autoFocus
                               />
                             ) : (
-                              // Normal display mode
                               <span
-                                className="text-gray-900 dark:text-gray-300"
+                                className="text-foreground"
                                 onDoubleClick={() => {
                                   setEditNameId(contact.id);
-                                  setNameInfo(contact.Name || ""); // Pre-fill existing name
+                                  setNameInfo(contact.Name || "");
                                 }}
                               >
                                 {contact.Name || (
-                                  <span className="text-gray-400 italic">
+                                  <span className="text-muted-foreground italic">
                                     Double-click to add name
                                   </span>
                                 )}
@@ -706,12 +703,12 @@ export default function ContactPage() {
                         )}
 
                         {selectedHeaders.includes("Email") && (
-                          <div className=" text-center cursor-pointer">
+                          <div className="text-sm text-muted-foreground">
                             {editEmailId === contact.id ? (
                               <input
                                 type="email"
                                 placeholder="Enter Email..."
-                                className="px-2 py-1 border rounded-md w-full"
+                                className="px-3 py-2 border rounded-md w-full bg-background text-foreground"
                                 value={emailInfo}
                                 onChange={(e) => setEmailInfo(e.target.value)}
                                 onKeyDown={(e) => {
@@ -722,21 +719,21 @@ export default function ContactPage() {
                                     setEditEmailId(null);
                                   } else if (e.key === "Escape") {
                                     setEditEmailId(null);
-                                    setEmailInfo(contact.email || ""); // Reset on cancel
+                                    setEmailInfo(contact.email || "");
                                   }
                                 }}
                                 autoFocus
                               />
                             ) : (
                               <span
-                                className="cursor-pointer group-hover:underline text-gray-600"
+                                className="cursor-pointer hover:underline text-foreground"
                                 onDoubleClick={() => {
                                   setEditEmailId(contact.id);
-                                  setEmailInfo(contact?.email || ""); // Pre-fill existing email
+                                  setEmailInfo(contact?.email || "");
                                 }}
                               >
                                 {contact.email || (
-                                  <span className="text-gray-400 italic">
+                                  <span className="text-muted-foreground italic">
                                     Double-click to add email
                                   </span>
                                 )}
@@ -745,464 +742,156 @@ export default function ContactPage() {
                           </div>
                         )}
                       </div>
-                      <TableCell>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => toggleRow(contact.id)}
-                          className="h-8 w-8 border-none bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-m"
-                        >
-                          {expandedRow === contact.id ? (
-                            <ChevronUp />
-                          ) : (
-                            <ChevronDown />
-                          )}
-                        </Button>
-                      </TableCell>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => toggleRow(contact.id)}
+                        className="h-8 w-8 rounded-full"
+                      >
+                        {expandedRow === contact.id ? (
+                          <ChevronUp className="h-4 w-4" />
+                        ) : (
+                          <ChevronDown className="h-4 w-4" />
+                        )}
+                      </Button>
                     </TableRow>
                     {expandedRow === contact.id && (
-                      <TableRow className="md:hidden lg:hidden">
-                        {selectedHeaders.includes("Phone") && (
-                          <div className="p-3 grid grid-cols-2 relative  cursor-pointer">
-                            <span className="text-gray-600">Phone</span>
-                            {editPhoneId === contact.id ? (
-                              // Editing mode: Show input field
-                              <input
-                                type="text"
-                                placeholder="Enter Phone..."
-                                className="px-2 py-1 border rounded-md w-full"
-                                value={phoneInfo}
-                                onChange={(e) => setPhoneInfo(e.target.value)}
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter") {
-                                    handleUpdate(contact.id, {
-                                      phone: phoneInfo,
-                                    });
-                                    setEditPhoneId(null); // Exit edit mode after updating
-                                  } else if (e.key === "Escape") {
-                                    setEditPhoneId(null);
-                                    setPhoneInfo(contact.phone || ""); // Reset on cancel
-                                  }
-                                }}
-                                autoFocus
-                              />
-                            ) : (
-                              // Normal mode: Show phone number
-                              <div className="inline-block group relative">
-                                {/* Phone Number */}
-                                <span
-                                  className="cursor-pointer group-hover:underline"
-                                  onDoubleClick={() => {
-                                    setEditPhoneId(contact.id);
-                                    setPhoneInfo(contact.phone || ""); // Pre-fill existing phone number
-                                  }}
-                                >
-                                  {contact.phone || (
-                                    <span className="text-gray-400 italic">
-                                      Double-click to add phone
-                                    </span>
-                                  )}
-                                </span>
-
-                                {/* Hover Menu - Appears Below */}
-                                <div
-                                  className="absolute left-1/2 -translate-x-1/2 hidden group-hover:flex flex-col bg-white shadow-md rounded-md p-2 w-[140px] border border-gray-200 z-50"
-                                  style={{
-                                    bottom: "calc(100% + 2px)", // Ensures no gap
-                                    transform: "translateX(-50%)",
-                                    pointerEvents: "auto", // Ensures interaction
-                                  }}
-                                >
-                                  {/* WhatsApp */}
-                                  <button
-                                    onClick={() =>
-                                      window.open(
-                                        `https://wa.me/${contact.phone}`,
-                                        "_blank"
-                                      )
-                                    }
-                                    className="flex items-center gap-2 text-sm text-gray-800 hover:text-green-600"
-                                  >
-                                    <Send className="h-4 w-4 text-green-500" />
-                                    WhatsApp
-                                  </button>
-
-                                  {/* Call */}
-                                  <button
-                                    onClick={() =>
-                                      (window.location.href = `tel:${contact.phone}`)
-                                    }
-                                    className="flex items-center gap-2 text-sm text-gray-800 hover:text-blue-600 mt-1"
-                                  >
-                                    <Phone className="h-4 w-4 text-blue-500" />
-                                    Call
-                                  </button>
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        )}
-
-                        {selectedHeaders.includes("Email Validation") && (
-                          <div className=" p-3 grid grid-cols-2  cursor-pointer">
-                            <span className="text-gray-600">
-                              Email Validation
-                            </span>
-                            {editEmailValidationId === contact.id ? (
-                              // Editing mode: Show <select> dropdown
-                              <select
-                                className="px-2 py-1 border rounded-md"
-                                value={emailValidation ? "true" : "false"}
-                                onChange={async (e) => {
-                                  const newValue = e.target.value === "true"; // Convert to boolean
-                                  setEmailValidation(newValue);
-                                  await handleUpdate(contact.id, {
-                                    is_email_valid: newValue,
-                                  });
-                                  setEditEmailValidationId(null); // Exit edit mode after update
-                                }}
-                                autoFocus
-                              >
-                                <option
-                                  className="px-2 py-1 text-sm font-semibold rounded bg-green-200 text-green-800"
-                                  value="true"
-                                >
-                                  True
-                                </option>
-                                <option
-                                  className="px-2 py-1 text-sm font-semibold rounded-l-md bg-red-200 text-red-800"
-                                  value="false"
-                                >
-                                  False
-                                </option>
-                              </select>
-                            ) : (
-                              // Normal mode: Show colored text
+                      <TableRow className="md:hidden">
+                        <div className="p-4 space-y-4 bg-muted/20 w-full">
+                          {selectedHeaders.includes("Phone") && (
+                            <div className="grid grid-cols-2 gap-2">
+                              <span className="text-muted-foreground font-medium">Phone</span>
                               <div>
-                                <span
-                                  onDoubleClick={() => {
-                                    setEditEmailValidationId(contact.id);
-                                    setEmailValidation(contact.is_email_valid);
-                                  }}
-                                  className={`px-2 py-1 text-sm font-semibold rounded ${
-                                    contact.is_email_valid
-                                      ? "bg-green-200 text-green-800"
-                                      : "bg-red-200 text-red-800"
-                                  }`}
-                                >
-                                  {contact.is_email_valid ? "True" : "False"}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                        )}
-                        {selectedHeaders.includes("Platform") && (
-                          <div className=" grid grid-cols-2 w-auto ">
-                            <span className="px-3 py-1 text-gray-600">
-                              Platform
-                            </span>
-                            {contact.sourceId ? (
-                              <WebhookStatus
-                                sourceId={contact.sourceId}
-                                workspaceId={workspaceId}
-                              />
-                            ) : (
-                              <span className="text-gray-500">No Source</span>
-                            )}
-                          </div>
-                        )}
-
-                        {selectedHeaders.includes("Bussiness Info") && (
-                          <div
-                            className="p-3 grid grid-cols-2  cursor-pointer"
-                            onDoubleClick={() => {
-                              setEditInfoId(contact.id);
-                              setBusinessInfo(contact.businessInfo || ""); // Pre-fill existing info
-                            }}
-                          >
-                            <span className="text-gray-600">
-                              Bussiness Info
-                            </span>
-                            {editInfoId === contact.id ? (
-                              // Editing mode: Show input field
-                              <input
-                                type="text"
-                                placeholder="Enter Business Info..."
-                                className="px-2 py-1 border rounded-md w-full"
-                                value={businessInfo}
-                                onChange={(e) =>
-                                  setBusinessInfo(e.target.value)
-                                }
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter") {
-                                    handleUpdate(contact.id, { businessInfo });
-                                    setEditInfoId(null);
-                                  } else if (e.key === "Escape") {
-                                    setEditInfoId(null);
-                                    setBusinessInfo(
-                                      contact?.bussinessInfo || ""
-                                    ); // Clear input on cancel
-                                  }
-                                }}
-                                autoFocus
-                              />
-                            ) : (
-                              // Normal display mode
-                              <span className="text-gray-700 dark:text-gray-300">
-                                {contact.businessInfo || (
-                                  <span className="text-gray-400 italic">
-                                    Double-click to add info
-                                  </span>
-                                )}
-                              </span>
-                            )}
-                          </div>
-                        )}
-                        {selectedHeaders.includes("Tag") && (
-                          <div
-                            className=" p-3 grid grid-cols-2 border-none cursor-pointer mb-4"
-                            onDoubleClick={() => {
-                              setOpenDropdownId(contact.id); // Open dropdown on double-click
-                            }}
-                          >
-                            <span className="text-gray-600">Tag</span>
-                            <div className="flex flex-row ">
-                              <div className="flex flex-row flex-wrap items-center">
-                                {(() => {
-                                  const parsedTags =
-                                    typeof contact?.tag === "string"
-                                      ? JSON.parse(contact.tag)
-                                      : contact?.tag || [];
-
-                                  return Array.isArray(parsedTags) ? (
-                                    parsedTags.map((tag: string) => (
-                                      <div
-                                        key={tag}
-                                        className="flex items-center gap-2  bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-md"
-                                      >
-                                        <div
-                                          className="h-3 w-3 rounded-lg"
-                                          style={{
-                                            backgroundColor:
-                                              tags.find((t) => t.name === tag)
-                                                ?.color || "#ccc",
-                                          }}
-                                        />
-                                        <span className="text-sm font-medium">
-                                          {tag}
+                                {editPhoneId === contact.id ? (
+                                  <input
+                                    type="text"
+                                    placeholder="Enter Phone..."
+                                    className="px-3 py-2 border rounded-md w-full bg-background text-foreground"
+                                    value={phoneInfo}
+                                    onChange={(e) => setPhoneInfo(e.target.value)}
+                                    onKeyDown={(e) => {
+                                      if (e.key === "Enter") {
+                                        handleUpdate(contact.id, {
+                                          phone: phoneInfo,
+                                        });
+                                        setEditPhoneId(null);
+                                      } else if (e.key === "Escape") {
+                                        setEditPhoneId(null);
+                                        setPhoneInfo(contact.phone || "");
+                                      }
+                                    }}
+                                    autoFocus
+                                  />
+                                ) : (
+                                  <div className="inline-block group relative">
+                                    <span
+                                      className="cursor-pointer hover:underline text-foreground"
+                                      onDoubleClick={() => {
+                                        setEditPhoneId(contact.id);
+                                        setPhoneInfo(contact.phone || "");
+                                      }}
+                                    >
+                                      {contact.phone || (
+                                        <span className="text-muted-foreground italic">
+                                          Double-click to add phone
                                         </span>
+                                      )}
+                                    </span>
+
+                                    {contact.phone && (
+                                      <div
+                                        className="absolute left-1/2 -translate-x-1/2 hidden group-hover:flex flex-col bg-popover shadow-md rounded-md p-2 w-[140px] border border-border z-50"
+                                        style={{
+                                          bottom: "calc(100% + 2px)",
+                                          transform: "translateX(-50%)",
+                                          pointerEvents: "auto",
+                                        }}
+                                      >
                                         <button
                                           onClick={() =>
-                                            handleRemoveTag(contact.id, tag)
+                                            window.open(
+                                              `https://wa.me/${contact.phone}`,
+                                              "_blank"
+                                            )
                                           }
-                                          className="text-xs text-red-500 hover:text-red-700"
+                                          className="flex items-center gap-2 text-sm text-foreground hover:text-green-600 transition-colors"
                                         >
-                                          ✕
+                                          <Send className="h-4 w-4 text-green-500" />
+                                          WhatsApp
+                                        </button>
+
+                                        <button
+                                          onClick={() =>
+                                            (window.location.href = `tel:${contact.phone}`)
+                                          }
+                                          className="flex items-center gap-2 text-sm text-foreground hover:text-blue-600 mt-1 transition-colors"
+                                        >
+                                          <Phone className="h-4 w-4 text-blue-500" />
+                                          Call
                                         </button>
                                       </div>
-                                    ))
-                                  ) : (
-                                    <span className="text-gray-400 italic">
-                                      Double click to add tags
-                                    </span>
-                                  );
-                                })()}
-                              </div>
-
-                              {/* Select Dropdown (Now opens on double-click) */}
-                              <Select
-                                open={openDropdownId === contact.id} // Control dropdown visibility
-                                onOpenChange={(isOpen) => {
-                                  if (!isOpen) setOpenDropdownId(null); // Close when user clicks outside
-                                }}
-                                onValueChange={(value) =>
-                                  handleTagChange(contact.id, value)
-                                }
-                              >
-                                {openDropdownId === contact.id && (
-                                  <SelectTrigger className="relative w-[180px] overflow-hidden rounded-xl border-0 bg-white px-4 py-2 shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl dark:bg-gray-800">
-                                    <span className="text-sm font-medium">
-                                      + Add Tag
-                                    </span>
-                                  </SelectTrigger>
-                                )}
-
-                                <SelectContent className="hidden md:flex w-[200px] overflow-hidden rounded-xl border-0 bg-white p-2 shadow-2xl dark:bg-gray-800">
-                                  <div className="flex flex-col gap-2">
-                                    {tags.map((tag) => (
-                                      <SelectItem
-                                        key={tag.name}
-                                        value={tag.name}
-                                      >
-                                        <div className="group flex items-center gap-3 rounded-lg p-2 transition-all hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                                          <div className="relative">
-                                            <div
-                                              className="absolute -inset-1 rounded-lg opacity-20 blur-sm transition-all duration-200 group-hover:opacity-40"
-                                              style={{
-                                                backgroundColor: tag.color,
-                                              }}
-                                            />
-                                            <div
-                                              className="relative h-3 w-3 rounded-lg transition-transform duration-200 group-hover:scale-110"
-                                              style={{
-                                                backgroundColor: tag.color,
-                                              }}
-                                            />
-                                          </div>
-                                          <span
-                                            className={`text-sm font-medium ${
-                                              selectedTags[
-                                                contact.id
-                                              ]?.includes(tag.name)
-                                                ? "font-bold text-blue-600"
-                                                : "text-gray-700 dark:text-gray-200"
-                                            }`}
-                                          >
-                                            {tag.name}
-                                          </span>
-                                        </div>
-                                      </SelectItem>
-                                    ))}
-                                  </div>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          </div>
-                        )}
-
-                        {selectedHeaders.includes("Address") && (
-                          <div
-                            className="p-3 flex gap-16 text-center cursor-pointer relative"
-                            onDoubleClick={() => {
-                              setopenAddress(contact.id);
-                              setAddressData({
-                                address1: contact.address
-                                  ? contact.address.split(",")[0]
-                                  : "",
-                                address2: contact.address
-                                  ? contact.address.split(",")[1]?.trim() || ""
-                                  : "",
-                                country: contact.address
-                                  ? contact.address.split(",")[2]?.trim() || ""
-                                  : "",
-                                zipCode: contact.address
-                                  ? contact.address.split(",")[3]?.trim() || ""
-                                  : "",
-                              });
-                            }}
-                          >
-                            <span className="text-gray-600">Address</span>
-                            {openAddress === contact.id ? (
-                              <div className="absolute left-1/2 -translate-x-1/2  bg-white border shadow-lg rounded-md p-4 w-[450px] z-50">
-                                <div className="flex flex-row items-center mb-4">
-                                  <label className="block text-sm font-semibold min-w-[80px]">
-                                    Address 1
-                                  </label>
-                                  <input
-                                    type="text"
-                                    className="w-full border p-2 rounded mt-1"
-                                    value={addressData.address1}
-                                    onChange={(e) =>
-                                      setAddressData({
-                                        ...addressData,
-                                        address1: e.target.value,
-                                      })
-                                    }
-                                  />
-
-                                  <label className="block text-sm font-semibold m-w-[90px]">
-                                    Address 2
-                                  </label>
-                                  <input
-                                    type="text"
-                                    className="w-full border p-2 rounded mt-1"
-                                    value={addressData.address2}
-                                    onChange={(e) =>
-                                      setAddressData({
-                                        ...addressData,
-                                        address2: e.target.value,
-                                      })
-                                    }
-                                  />
-                                </div>
-
-                                <div className="flex flex-row">
-                                  <label className="block text-sm font-semibold mt-2">
-                                    Country
-                                  </label>
-                                  <input
-                                    type="text"
-                                    className="w-full border p-2 rounded mt-1"
-                                    value={addressData.country}
-                                    onChange={(e) =>
-                                      setAddressData({
-                                        ...addressData,
-                                        country: e.target.value,
-                                      })
-                                    }
-                                  />
-
-                                  <label className="block text-sm font-semibold mt-2 min-w-[80px]">
-                                    ZIP Code
-                                  </label>
-                                  <input
-                                    type="text"
-                                    className="w-full border p-2 rounded mt-1"
-                                    value={addressData.zipCode}
-                                    onChange={(e) =>
-                                      setAddressData({
-                                        ...addressData,
-                                        zipCode: e.target.value,
-                                      })
-                                    }
-                                  />
-                                </div>
-                                <div className="flex justify-end gap-2 mt-3">
-                                  <button
-                                    className="bg-gray-300 px-3 py-1 rounded"
-                                    onClick={() => setopenAddress({})}
-                                  >
-                                    Cancel
-                                  </button>
-                                  <button
-                                    className="bg-blue-500 text-white px-3 py-1 rounded"
-                                    onClick={() => {
-                                      handleUpdate(contact.id, {
-                                        address:
-                                          `${addressData.address1}, ${addressData.address2}, ${addressData.country}, ${addressData.zipCode}`.trim(),
-                                      });
-                                      setopenAddress({});
-                                    }}
-                                  >
-                                    Save
-                                  </button>
-                                </div>
-                              </div>
-                            ) : (
-                              <span className="text-gray-700 dark:text-gray-300">
-                                {contact.address1 ? (
-                                  <>
-                                    {contact.address1}, {contact.address2},{" "}
-                                    {contact.country} - {contact.zipCode}
-                                  </>
-                                ) : (
-                                  <span className="text-gray-700 dark:text-gray-300">
-                                    {contact.address ? (
-                                      <>{contact.address}</>
-                                    ) : (
-                                      <span className="text-gray-400 italic">
-                                        Double-click to add address
-                                      </span>
                                     )}
-                                  </span>
+                                  </div>
                                 )}
+                              </div>
+                            </div>
+                          )}
+
+                          {selectedHeaders.includes("Email Validation") && (
+                            <div className="grid grid-cols-2 gap-2">
+                              <span className="text-muted-foreground font-medium">
+                                Email Validation
                               </span>
-                            )}
-                          </div>
-                        )}
+                              <div>
+                                {editEmailValidationId === contact.id ? (
+                                  <select
+                                    className="px-3 py-2 border rounded-md bg-background text-foreground"
+                                    value={emailValidation ? "true" : "false"}
+                                    onChange={async (e) => {
+                                      const newValue = e.target.value === "true";
+                                      setEmailValidation(newValue);
+                                      await handleUpdate(contact.id, {
+                                        is_email_valid: newValue,
+                                      });
+                                      setEditEmailValidationId(null);
+                                    }}
+                                    autoFocus
+                                  >
+                                    <option
+                                      value="true"
+                                    >
+                                      True
+                                    </option>
+                                    <option
+                                      value="false"
+                                    >
+                                      False
+                                    </option>
+                                  </select>
+                                ) : (
+                                  <div>
+                                    <span
+                                      onDoubleClick={() => {
+                                        setEditEmailValidationId(contact.id);
+                                        setEmailValidation(contact.is_email_valid);
+                                      }}
+                                      className={`px-2 py-1 text-sm font-medium rounded ${
+                                        contact.is_email_valid
+                                          ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100"
+                                          : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100"
+                                      }`}
+                                    >
+                                      {contact.is_email_valid ? "True" : "False"}
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       </TableRow>
                     )}
-                  </>
+                  </React.Fragment>
                 ))}
                 {/* Desktop Veiw */}
                 {filteredContacts.map((contact) => (
@@ -1214,7 +903,7 @@ export default function ContactPage() {
                           <input
                             type="text"
                             placeholder="Enter Name..."
-                            className="px-2 py-1 border rounded-md w-full"
+                            className="px-2 py-1 border rounded-md w-full bg-background text-foreground"
                             value={nameInfo}
                             onChange={(e) => setNameInfo(e.target.value)}
                             onKeyDown={(e) => {
@@ -1253,7 +942,7 @@ export default function ContactPage() {
                           <input
                             type="email"
                             placeholder="Enter Email..."
-                            className="px-2 py-1 border rounded-md w-full"
+                            className="px-2 py-1 border rounded-md w-full bg-background text-foreground"
                             value={emailInfo}
                             onChange={(e) => setEmailInfo(e.target.value)}
                             onKeyDown={(e) => {
@@ -1271,7 +960,7 @@ export default function ContactPage() {
                           <div className="relative inline-block group">
                             {/* Email Text */}
                             <span
-                              className="cursor-pointer group-hover:underline"
+                              className="cursor-pointer group-hover:underline text-foreground"
                               onDoubleClick={() => {
                                 setEditEmailId(contact.id);
                                 setEmailInfo(contact?.email || ""); // Pre-fill existing email
@@ -1287,7 +976,7 @@ export default function ContactPage() {
                             {/* Hover Menu - Ensures it appears properly */}
                             {contact.email && (
                               <div
-                                className="absolute left-1/2 -translate-x-1/2 hidden group-hover:flex flex-col bg-white shadow-md rounded-md p-2 w-[140px] border border-gray-200 z-50"
+                                className="absolute left-1/2 -translate-x-1/2 hidden group-hover:flex flex-col bg-popover shadow-md rounded-md p-2 w-[140px] border border-border z-50"
                                 style={{
                                   bottom: "calc(100% )", // Ensures no gap
                                   transform: "translateX(-50%)",
@@ -1299,7 +988,7 @@ export default function ContactPage() {
                                   onClick={() =>
                                     (window.location.href = `mailto:${contact.email}`)
                                   }
-                                  className="flex items-center gap-2 text-sm text-gray-800 hover:text-blue-600 w-full text-left"
+                                  className="flex items-center gap-2 text-sm text-foreground hover:text-blue-600 w-full text-left"
                                 >
                                   <Send className="h-4 w-4 text-blue-500" />
                                   Send Email
@@ -1313,7 +1002,7 @@ export default function ContactPage() {
                                       "_blank"
                                     )
                                   }
-                                  className="flex items-center gap-2 text-sm text-gray-800 hover:text-red-600 w-full text-left mt-1"
+                                  className="flex items-center gap-2 text-sm text-foreground hover:text-red-600 w-full text-left mt-1"
                                 >
                                   <Mail className="h-4 w-4 text-red-500" />
                                   Open in Gmail
@@ -1332,7 +1021,7 @@ export default function ContactPage() {
                           <input
                             type="text"
                             placeholder="Enter Phone..."
-                            className="px-2 py-1 border rounded-md w-full"
+                            className="px-2 py-1 border rounded-md w-full bg-background text-foreground"
                             value={phoneInfo}
                             onChange={(e) => setPhoneInfo(e.target.value)}
                             onKeyDown={(e) => {
@@ -1350,7 +1039,7 @@ export default function ContactPage() {
                           <div className="inline-block group relative">
                             {/* Phone Number */}
                             <span
-                              className="cursor-pointer group-hover:underline"
+                              className="cursor-pointer group-hover:underline text-foreground"
                               onDoubleClick={() => {
                                 setEditPhoneId(contact.id);
                                 setPhoneInfo(contact.phone || ""); // Pre-fill existing phone number
@@ -1365,7 +1054,7 @@ export default function ContactPage() {
 
                             {/* Hover Menu - Appears Below */}
                             <div
-                              className="absolute left-1/2 -translate-x-1/2 hidden group-hover:flex flex-col bg-white shadow-md rounded-md p-2 w-[140px] border border-gray-200 z-50"
+                              className="absolute left-1/2 -translate-x-1/2 hidden group-hover:flex flex-col bg-popover shadow-md rounded-md p-2 w-[140px] border border-border z-50"
                               style={{
                                 bottom: "calc(100% + 2px)", // Ensures no gap
                                 transform: "translateX(-50%)",
@@ -1380,7 +1069,7 @@ export default function ContactPage() {
                                     "_blank"
                                   )
                                 }
-                                className="flex items-center gap-2 text-sm text-gray-800 hover:text-green-600"
+                                className="flex items-center gap-2 text-sm text-foreground hover:text-green-600"
                               >
                                 <Send className="h-4 w-4 text-green-500" />
                                 WhatsApp
@@ -1391,7 +1080,7 @@ export default function ContactPage() {
                                 onClick={() =>
                                   (window.location.href = `tel:${contact.phone}`)
                                 }
-                                className="flex items-center gap-2 text-sm text-gray-800 hover:text-blue-600 mt-1"
+                                className="flex items-center gap-2 text-sm text-foreground hover:text-blue-600 mt-1"
                               >
                                 <Phone className="h-4 w-4 text-blue-500" />
                                 Call
@@ -1407,7 +1096,7 @@ export default function ContactPage() {
                         {editEmailValidationId === contact.id ? (
                           // Editing mode: Show <select> dropdown
                           <select
-                            className="px-2 py-1 border rounded-md"
+                            className="px-2 py-1 border rounded-md bg-background text-foreground"
                             value={emailValidation ? "true" : "false"}
                             onChange={async (e) => {
                               const newValue = e.target.value === "true"; // Convert to boolean
@@ -1476,7 +1165,7 @@ export default function ContactPage() {
                           <input
                             type="text"
                             placeholder="Enter Business Info..."
-                            className="px-2 py-1 border rounded-md w-full"
+                            className="px-2 py-1 border rounded-md w-full bg-background text-foreground"
                             value={businessInfo}
                             onChange={(e) => setBusinessInfo(e.target.value)}
                             onKeyDown={(e) => {
