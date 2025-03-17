@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -384,20 +384,22 @@ export function Sidebar({
     }
   };
   // console.log(user)
+  const sidebarRef = useRef<HTMLDivElement | null>(null);
   return (
     <>
       {/* Mobile Menu Button */}
-      {/* <Button
-        variant="outline"
+      <Button
+        variant="ghost"
         size="icon"
-        className="md:hidden fixed top-4 left-4 z-50 bg-white dark:bg-slate-900 dark:text-white dark:border-slate-700"
-        // onClick={() => setIsOpen(!isOpen)}
+        className="md:hidden fixed top-4 right-4 z-50 bg-white dark:bg-slate-900 dark:text-white dark:border-slate-700"
+        onClick={() => setIsOpen(!isOpen)}
       >
-        {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-      </Button> */}
+        {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+      </Button>
 
       {/* Sidebar */}
       <div
+        ref={sidebarRef}
         className={cn(
           "fixed top-0 left-0 h-full bg-white dark:bg-slate-900 dark:text-white shadow-lg transform transition-all duration-300 ease-in-out",
           "md:translate-x-0",
@@ -421,51 +423,48 @@ export function Sidebar({
         </Button>
 
         {/* Logo Section */}
-        <div className="flex items-center justify-between py-4 px-4 bg-inherit">
+        <div className={cn(
+          "flex items-center bg-inherit", 
+          isCollapsed ? "justify-center py-4" : "justify-between py-4 px-4"
+        )}>
           <a
             href="/dashboard"
             className="flex items-center gap-2 hover:opacity-90 transition-opacity"
           >
-            <div className="flex items-center justify-center w-8 h-8 bg-black text-white rounded-md font-bold text-xs">
+            <div className={cn(
+              "flex items-center justify-center bg-black text-white rounded-md font-bold text-xs",
+              isCollapsed ? "w-10 h-10" : "w-8 h-8"
+            )}>
               SC
             </div>
-            {!isCollapsed && (
-              <div className="flex flex-col">
-                <span className="text-sm font-bold">Scraft Admin</span>
-                <span className="text-xs text-gray-500">Pro • Scraft UI</span>
-              </div>
-            )}
+            {!isCollapsed && <span className="font-semibold text-lg">SCRAFT</span>}
           </a>
-          <Button
-            variant="outline"
-            size="icon"
-            className="md:hidden lg:hidden ml-2 bg-white dark:bg-slate-900 dark:text-white dark:border-slate-700"
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            {isOpen && <X className="h-6 w-6" />}
-          </Button>
+          
+          {/* Removing the close button from here since we now have a dedicated mobile menu button */}
         </div>
 
         {/* Workspace Selector */}
-        <div className={cn("px-4 mb-4", isCollapsed && "px-2")}>
+        <div className={cn("mb-4", isCollapsed ? "px-0" : "px-4")}>
           {isCollapsed ? (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="w-full"
-                  onClick={() => {
-                    setIsOpen(!isOpen), dispatch(toggleCollapse());
-                  }}
-                >
-                  <Folder className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="right">
-                <p>{selectedWorkspace?.name || "Select workspace"}</p>
-              </TooltipContent>
-            </Tooltip>
+            <div className="flex justify-center">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-10 h-10 p-0"
+                    onClick={() => {
+                      setIsOpen(!isOpen), dispatch(toggleCollapse());
+                    }}
+                  >
+                    <Folder className="h-4 w-4 text-slate-600 dark:text-slate-300" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="right">
+                  <p>{selectedWorkspace?.name || "Select workspace"}</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
           ) : (
             <div className="flex items-center justify-between w-full bg-gray-50 dark:bg-slate-800 rounded-md p-2">
               <div className="flex items-center">
@@ -792,12 +791,12 @@ export function Sidebar({
           </div>
           
           {/* Other Section */}
-          <div className="space-y-1">
-            {!isCollapsed && <p className="text-xs font-medium text-gray-500 px-2 mb-2">Other</p>}
+          <div className="space-y-1 py-2">
+            {!isCollapsed && <p className="text-xs font-medium text-gray-500 px-4 mb-2">Other</p>}
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  variant="ghost"
+                  variant={pathname === "/profile" ? "secondary" : "ghost"}
                   className={cn(
                     "w-full justify-start hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-white dark:hover:text-white relative",
                     isCollapsed && "justify-center px-2"
@@ -805,7 +804,7 @@ export function Sidebar({
                   onClick={() => setIsOpen(false)}
                   asChild
                 >
-                  <Link href="/setting">
+                  <Link href="/profile">
                     <Settings className="h-4 w-4 text-slate-600 dark:text-slate-300" />
                     {!isCollapsed && <span className="ml-2">Settings</span>}
                   </Link>
@@ -814,31 +813,6 @@ export function Sidebar({
               {isCollapsed && (
                 <TooltipContent side="right">
                   <p>Settings</p>
-                </TooltipContent>
-              )}
-            </Tooltip>
-            
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className={cn(
-                    "w-full justify-start hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-white dark:hover:text-white relative",
-                    isCollapsed && "justify-center px-2"
-                  )}
-                  onClick={() => setIsOpen(false)}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-slate-600 dark:text-slate-300">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-                    <path d="M12 17h.01" />
-                  </svg>
-                  {!isCollapsed && <span className="ml-2">Help Center</span>}
-                </Button>
-              </TooltipTrigger>
-              {isCollapsed && (
-                <TooltipContent side="right">
-                  <p>Help Center</p>
                 </TooltipContent>
               )}
             </Tooltip>
