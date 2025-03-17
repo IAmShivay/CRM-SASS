@@ -9,7 +9,7 @@ const nextConfig = {
   },
   images: { 
     unoptimized: false,
-    domains: ['supabasekong-pgo8c80w04gcoo4w88kgsw0s.breaktheice.in'],
+    domains: ['supabasekong-u0k8kkksk4k8ccw0ow0kg084.breaktheice.in'],
     formats: ['image/avif', 'image/webp']
   },
   swcMinify: true,

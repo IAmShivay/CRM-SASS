@@ -385,6 +385,7 @@ export function Sidebar({
   };
   // console.log(user)
   const sidebarRef = useRef<HTMLDivElement | null>(null);
+  console.log(user)
   return (
     <>
       {/* Mobile Menu Button */}
@@ -827,7 +828,7 @@ export function Sidebar({
                 <Button variant="ghost" className="w-full h-10 p-0">
                   <div className="relative w-10 h-10 rounded-full overflow-hidden">
                     <Image
-                      src={user?.avatar || "/placeholder-avatar.jpg"}
+                      src={user?.user_metadata?.avatar || "/placeholder-avatar.jpg"}
                       alt={`${user?.name || "User"}'s profile`}
                       width={40}
                       height={40}
@@ -885,8 +886,8 @@ export function Sidebar({
               <div className="flex items-center space-x-3 overflow-hidden">
                 <div className="relative w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
                   <Image
-                    src={user?.avatar}
-                    alt={`${user?.name || "User"}'s profile`}
+                      src={user?.user_metadata?.avatar || "/placeholder-avatar.jpg"}
+                      alt={`${user?.name || "User"}'s profile`}
                     width={40}
                     height={40}
                     className="object-cover w-full h-full rounded-full"
