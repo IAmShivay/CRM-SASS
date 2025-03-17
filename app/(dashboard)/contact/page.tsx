@@ -814,7 +814,7 @@ export default function ContactPage() {
                                               "_blank"
                                             )
                                           }
-                                          className="flex items-center gap-2 text-sm text-foreground hover:text-green-600 transition-colors"
+                                          className="flex items-center gap-2 text-sm text-foreground hover:text-green-600"
                                         >
                                           <Send className="h-4 w-4 text-green-500" />
                                           WhatsApp
@@ -824,7 +824,7 @@ export default function ContactPage() {
                                           onClick={() =>
                                             (window.location.href = `tel:${contact.phone}`)
                                           }
-                                          className="flex items-center gap-2 text-sm text-foreground hover:text-blue-600 mt-1 transition-colors"
+                                          className="flex items-center gap-2 text-sm text-foreground hover:text-blue-600 mt-1"
                                         >
                                           <Phone className="h-4 w-4 text-blue-500" />
                                           Call
@@ -1294,7 +1294,6 @@ export default function ContactPage() {
                         </div>
                       </TableCell>
                     )}
-
                     {selectedHeaders.includes("Address") && (
                       <TableCell
                         className=" text-center cursor-pointer relative"
@@ -1428,104 +1427,117 @@ export default function ContactPage() {
                 ))}
               </TableBody>
             </Table>
-            {/* {dropdownOpen && (
-            <div className="absolute left-0 mt-2 bg-white border shadow-lg rounded-md p-2 w-40 z-50">
-              <select
-                className="border p-2 rounded"
-                value={newColumn}
-                onChange={(e) => setNewColumn(e.target.value)}
-              >
-                <option value="">Select Column</option>
-                {tableHeaders
-                  .filter((header) => !selectedHeaders.includes(header))
-                  .map((header) => (
-                    <option key={header} value={header}>
-                      {header}
-                    </option>
-                  ))}
-              </select>
-              <button
-                onClick={addColumn}
-                className="bg-green-500 text-white px-3 py-2 rounded ml-2 hover:bg-green-600"
-              >
-                Add
-              </button>
-            </div>
-          )} */}
           </div>
         </div>
       </div>
 
       {/* Pagination */}
       {contacts.length > 10 && (
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mt-6 px-4">
           <div className="flex items-center gap-2">
-            <Select
-              value={String(itemsPerPage)}
-              onValueChange={(value) => {
-                setItemsPerPage(Number(value));
-                setCurrentPage(1);
-              }}
-            >
-              <SelectTrigger className="w-[120px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="5">5 per page</SelectItem>
-                <SelectItem value="10">10 per page</SelectItem>
-                <SelectItem value="20">20 per page</SelectItem>
-                <SelectItem value="50">50 per page</SelectItem>
-              </SelectContent>
-            </Select>
-            <span className="text-sm text-gray-500">
-              Showing {startIndex + 1} to{" "}
-              {Math.min(startIndex + itemsPerPage, filteredContacts.length)} of{" "}
-              {filteredContacts.length} entries
-            </span>
+            <p className="text-sm text-muted-foreground">
+              Showing{" "}
+              <span className="font-medium text-foreground">
+                {filteredContacts.length > 0
+                  ? (currentPage - 1) * itemsPerPage + 1
+                  : 0}
+              </span>{" "}
+              to{" "}
+              <span className="font-medium text-foreground">
+                {Math.min(
+                  currentPage * itemsPerPage,
+                  filteredContacts.length
+                )}
+              </span>{" "}
+              of{" "}
+              <span className="font-medium text-foreground">
+                {filteredContacts.length}
+              </span>{" "}
+              contacts
+            </p>
           </div>
-          <div className="flex gap-2">
+
+          <div className="flex items-center gap-2">
             <Button
               variant="outline"
-              size="icon"
-              onClick={() => setCurrentPage(currentPage - 1)}
+              size="sm"
+              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
               disabled={currentPage === 1}
+              className="h-8 w-8 p-0"
             >
               <ChevronLeft className="h-4 w-4" />
+              <span className="sr-only">Previous page</span>
             </Button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1)
-              .filter((page) => {
-                const distance = Math.abs(page - currentPage);
-                return (
-                  distance === 0 ||
-                  distance === 1 ||
-                  page === 1 ||
-                  page === totalPages
-                );
-              })
-              .map((page, i, arr) => (
-                <React.Fragment key={page}>
-                  {i > 0 && arr[i - 1] !== page - 1 && (
-                    <Button variant="outline" size="icon" disabled>
-                      ...
+            <div className="flex items-center gap-1">
+              {Array.from(
+                { length: Math.ceil(filteredContacts.length / itemsPerPage) },
+                (_, i) => i + 1
+              )
+                .filter(
+                  (page) =>
+                    page === 1 ||
+                    page === Math.ceil(filteredContacts.length / itemsPerPage) ||
+                    (page >= currentPage - 1 && page <= currentPage + 1)
+                )
+                .map((page, index, array) => (
+                  <React.Fragment key={page}>
+                    {index > 0 && array[index - 1] !== page - 1 && (
+                      <span className="text-muted-foreground mx-1">...</span>
+                    )}
+                    <Button
+                      variant={currentPage === page ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setCurrentPage(page)}
+                      className={`h-8 w-8 p-0 ${
+                        currentPage === page
+                          ? "bg-primary text-primary-foreground"
+                          : "text-foreground"
+                      }`}
+                    >
+                      {page}
                     </Button>
-                  )}
-                  <Button
-                    variant={currentPage === page ? "default" : "outline"}
-                    size="icon"
-                    onClick={() => setCurrentPage(page)}
-                  >
-                    {page}
-                  </Button>
-                </React.Fragment>
-              ))}
+                  </React.Fragment>
+                ))}
+            </div>
             <Button
               variant="outline"
-              size="icon"
-              onClick={() => setCurrentPage(currentPage + 1)}
-              disabled={currentPage === totalPages}
+              size="sm"
+              onClick={() =>
+                setCurrentPage(
+                  Math.min(
+                    Math.ceil(filteredContacts.length / itemsPerPage),
+                    currentPage + 1
+                  )
+                )
+              }
+              disabled={
+                currentPage ===
+                Math.ceil(filteredContacts.length / itemsPerPage)
+              }
+              className="h-8 w-8 p-0"
             >
               <ChevronRight className="h-4 w-4" />
+              <span className="sr-only">Next page</span>
             </Button>
+            
+            <Select
+              value={itemsPerPage.toString()}
+              onValueChange={(value) => {
+                setItemsPerPage(Number(value));
+                setCurrentPage(1); // Reset to first page when changing items per page
+              }}
+            >
+              <SelectTrigger className="h-8 w-[70px]">
+                <SelectValue placeholder={itemsPerPage} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="12">12</SelectItem>
+                <SelectItem value="24">24</SelectItem>
+                <SelectItem value="36">36</SelectItem>
+                <SelectItem value="48">48</SelectItem>
+              </SelectContent>
+            </Select>
+            <span className="text-sm text-muted-foreground">per page</span>
           </div>
         </div>
       )}
