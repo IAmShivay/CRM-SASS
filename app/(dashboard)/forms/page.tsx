@@ -198,7 +198,7 @@ const FormsPage = () => {
       // Add workspace_id to the form data and handle "none" lead_source_id
       const formData = {
         ...values,
-        workspace_id: workspaceId,
+        workspace_id: Number(workspaceId), // Convert to number
         lead_source_id: values.lead_source_id === "none" ? null : values.lead_source_id,
       };
 

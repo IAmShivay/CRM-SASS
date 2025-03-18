@@ -11,7 +11,7 @@ const formSchema = z.object({
   css_content: z.string().optional(),
   js_content: z.string().optional(),
   is_active: z.boolean().default(true),
-  workspace_id: z.string().uuid("Invalid workspace ID"),
+  workspace_id: z.number().int("Invalid workspace ID"),
   lead_source_id: z.string().uuid("Invalid lead source ID").optional(),
 });
 
