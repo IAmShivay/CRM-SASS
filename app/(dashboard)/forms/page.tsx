@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store/store";
+import { useGetActiveWorkspaceQuery } from "@/lib/store/services/workspace";
+import { useGetWebhooksQuery } from "@/lib/store/services/webhooks";
 import {
   Card,
   CardContent,
@@ -44,7 +46,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Copy, Save, Share, Trash, Plus, Code, Eye } from "lucide-react";
 import { createClient } from "@supabase/supabase-js";
-import { useGetActiveWorkspaceQuery } from "@/lib/store/services/workspace";
 
 // Form schema for validation
 const formSchema = z.object({
@@ -72,15 +73,16 @@ const FormsPage = () => {
   const isCollapsed = useSelector((state: RootState) => state.sidebar.isCollapsed);
   const { data: activeWorkspace, isLoading: isWorkspaceLoading } = useGetActiveWorkspaceQuery();
   const workspaceId = activeWorkspace?.data?.id;
-  
+  const { data: webhooksData, isLoading: isWebhooksLoading } = useGetWebhooksQuery({ id: workspaceId || '' }, { skip: !workspaceId });
+
   const [forms, setForms] = useState<any[]>([]);
   const [leadSources, setLeadSources] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [formLoading, setFormLoading] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState("");
   const [activeTab, setActiveTab] = useState("forms");
   const [editorTab, setEditorTab] = useState("html");
-  
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
   // Form hook
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -95,18 +97,17 @@ const FormsPage = () => {
     },
   });
 
-  // Fetch forms and lead sources when workspace changes
+  // Effects for fetching data
   useEffect(() => {
     if (workspaceId) {
       fetchForms();
-      fetchLeadSources();
-      
+
       // Set up realtime subscription for leads
       const channel = supabase
         .channel('public:leads')
-        .on('postgres_changes', { 
-          event: 'INSERT', 
-          schema: 'public', 
+        .on('postgres_changes', {
+          event: 'INSERT',
+          schema: 'public',
           table: 'leads',
           filter: `workspace_id=eq.${workspaceId}`
         }, (payload) => {
@@ -116,12 +117,20 @@ const FormsPage = () => {
           // You could invalidate the leads query here if needed
         })
         .subscribe();
-        
+
       return () => {
         supabase.removeChannel(channel);
       };
     }
   }, [workspaceId]);
+
+  // Set lead sources from webhooks data when it's available
+  useEffect(() => {
+    if (webhooksData?.webhooks) {
+      setLeadSources(webhooksData.webhooks);
+      setLoading(false);
+    }
+  }, [webhooksData]);
 
   // Fetch form details if editing an existing form
   useEffect(() => {
@@ -135,31 +144,19 @@ const FormsPage = () => {
     try {
       setLoading(true);
       const response = await fetch(`/api/forms?workspace_id=${workspaceId}`);
+      // http://localhost:3000/api/=3
+
       if (!response.ok) {
         throw new Error('Failed to fetch forms');
       }
+
       const data = await response.json();
       setForms(data.forms || []);
     } catch (error) {
       console.error('Error fetching forms:', error);
-      toast.error('Failed to load forms');
+      toast.error('Failed to fetch forms');
     } finally {
       setLoading(false);
-    }
-  };
-
-  // Fetch all lead sources for the current workspace
-  const fetchLeadSources = async () => {
-    try {
-      const response = await fetch(`/api/lead-sources?workspace_id=${workspaceId}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch lead sources');
-      }
-      const data = await response.json();
-      setLeadSources(data.leadSources || []);
-    } catch (error) {
-      console.error('Error fetching lead sources:', error);
-      toast.error('Failed to load lead sources');
     }
   };
 
@@ -172,7 +169,7 @@ const FormsPage = () => {
         throw new Error('Failed to fetch form details');
       }
       const data = await response.json();
-      
+
       // Reset form with fetched data
       form.reset({
         name: data.form.name,
@@ -183,7 +180,7 @@ const FormsPage = () => {
         is_active: data.form.is_active,
         lead_source_id: data.form.lead_source_id || "",
       });
-      
+
       setActiveTab("editor");
     } catch (error) {
       console.error('Error fetching form details:', error);
@@ -192,19 +189,19 @@ const FormsPage = () => {
       setFormLoading(false);
     }
   };
-
+  console.log(webhooksData);
   // Create or update a form
   const onSubmit = async (values: FormValues) => {
     try {
       setFormLoading(true);
-      
+
       // Add workspace_id to the form data and handle "none" lead_source_id
       const formData = {
         ...values,
         workspace_id: workspaceId,
         lead_source_id: values.lead_source_id === "none" ? null : values.lead_source_id,
       };
-      
+
       let response;
       if (formId) {
         // Update existing form
@@ -225,19 +222,19 @@ const FormsPage = () => {
           body: JSON.stringify(formData),
         });
       }
-      
+
       if (!response.ok) {
         throw new Error('Failed to save form');
       }
-      
+
       const data = await response.json();
       toast.success(formId ? 'Form updated successfully' : 'Form created successfully');
-      
+
       // Redirect to the form editor with the new form ID
       if (!formId) {
         router.push(`/forms?id=${data.form.id}`);
       }
-      
+
       // Refresh the forms list
       fetchForms();
     } catch (error) {
@@ -253,24 +250,24 @@ const FormsPage = () => {
     if (!confirm('Are you sure you want to delete this form? This action cannot be undone.')) {
       return;
     }
-    
+
     try {
       setLoading(true);
       const response = await fetch(`/api/forms?id=${id}`, {
         method: 'DELETE',
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to delete form');
       }
-      
+
       toast.success('Form deleted successfully');
-      
+
       // If currently editing this form, redirect to forms list
       if (formId === id) {
         router.push('/forms');
       }
-      
+
       // Refresh the forms list
       fetchForms();
     } catch (error) {
@@ -287,7 +284,7 @@ const FormsPage = () => {
     const htmlContent = formValues.html_content;
     const cssContent = formValues.css_content || '';
     const jsContent = formValues.js_content || '';
-    
+
     const fullHtml = `
       <!DOCTYPE html>
       <html lang="en">
@@ -346,11 +343,11 @@ const FormsPage = () => {
       </body>
       </html>
     `;
-    
+
     const blob = new Blob([fullHtml], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
     setPreviewUrl(url);
-    
+
     // Open the preview in a new tab
     window.open(url, '_blank');
   };
@@ -361,7 +358,7 @@ const FormsPage = () => {
       toast.error('Please save the form first');
       return;
     }
-    
+
     const embedCode = `<iframe src="${window.location.origin}/embed/forms/${formId}" width="100%" height="500" frameborder="0"></iframe>`;
     navigator.clipboard.writeText(embedCode);
     toast.success('Embed code copied to clipboard');
@@ -378,7 +375,7 @@ const FormsPage = () => {
       is_active: true,
       lead_source_id: "none",
     });
-    
+
     router.push('/forms');
     setActiveTab("editor");
   };
@@ -551,7 +548,7 @@ document.addEventListener('DOMContentLoaded', function() {
               <TabsTrigger value="editor">Form Editor</TabsTrigger>
               {formId && <TabsTrigger value="preview">Preview</TabsTrigger>}
             </TabsList>
-            
+
             {/* Forms List Tab */}
             <TabsContent value="forms" className="space-y-6">
               {loading ? (
@@ -607,7 +604,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
               )}
             </TabsContent>
-            
+
             {/* Form Editor Tab */}
             <TabsContent value="editor" className="space-y-6">
               {formLoading ? (
@@ -632,7 +629,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             </FormItem>
                           )}
                         />
-                        
+
                         <FormField
                           control={form.control}
                           name="description"
@@ -640,24 +637,24 @@ document.addEventListener('DOMContentLoaded', function() {
                             <FormItem>
                               <FormLabel>Description</FormLabel>
                               <FormControl>
-                                <Textarea 
-                                  placeholder="A brief description of this form's purpose" 
-                                  {...field} 
+                                <Textarea
+                                  placeholder="A brief description of this form's purpose"
+                                  {...field}
                                 />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
                           )}
                         />
-                        
+
                         <FormField
                           control={form.control}
                           name="lead_source_id"
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>Lead Source</FormLabel>
-                              <Select 
-                                onValueChange={field.onChange} 
+                              <Select
+                                onValueChange={field.onChange}
                                 defaultValue={field.value}
                               >
                                 <FormControl>
@@ -667,7 +664,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </FormControl>
                                 <SelectContent>
                                   <SelectItem value="none">None</SelectItem>
-                                  {leadSources.map((source) => (
+                                  {webhooksData?.data?.map((source: any) => (
                                     <SelectItem key={source.id} value={source.id}>
                                       {source.name}
                                     </SelectItem>
@@ -681,7 +678,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             </FormItem>
                           )}
                         />
-                        
+
                         <FormField
                           control={form.control}
                           name="is_active"
@@ -705,7 +702,7 @@ document.addEventListener('DOMContentLoaded', function() {
                           )}
                         />
                       </div>
-                      
+
                       <div className="space-y-6">
                         <div className="border rounded-md overflow-hidden">
                           <Tabs value={editorTab} onValueChange={setEditorTab} className="w-full">
@@ -725,7 +722,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </TabsTrigger>
                               </TabsList>
                             </div>
-                            
+
                             <TabsContent value="html" className="mt-0 border-0 p-0">
                               <FormField
                                 control={form.control}
@@ -733,9 +730,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                 render={({ field }) => (
                                   <FormItem>
                                     <FormControl>
-                                      <Textarea 
+                                      <Textarea
                                         className="font-mono min-h-[400px] rounded-none border-0 resize-none focus-visible:ring-0"
-                                        {...field} 
+                                        {...field}
                                       />
                                     </FormControl>
                                     <FormMessage />
@@ -743,7 +740,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 )}
                               />
                             </TabsContent>
-                            
+
                             <TabsContent value="css" className="mt-0 border-0 p-0">
                               <FormField
                                 control={form.control}
@@ -751,9 +748,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                 render={({ field }) => (
                                   <FormItem>
                                     <FormControl>
-                                      <Textarea 
+                                      <Textarea
                                         className="font-mono min-h-[400px] rounded-none border-0 resize-none focus-visible:ring-0"
-                                        {...field} 
+                                        {...field}
                                       />
                                     </FormControl>
                                     <FormMessage />
@@ -761,7 +758,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 )}
                               />
                             </TabsContent>
-                            
+
                             <TabsContent value="js" className="mt-0 border-0 p-0">
                               <FormField
                                 control={form.control}
@@ -769,9 +766,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                 render={({ field }) => (
                                   <FormItem>
                                     <FormControl>
-                                      <Textarea 
+                                      <Textarea
                                         className="font-mono min-h-[400px] rounded-none border-0 resize-none focus-visible:ring-0"
-                                        {...field} 
+                                        {...field}
                                       />
                                     </FormControl>
                                     <FormMessage />
@@ -783,14 +780,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="flex justify-between">
                       <Button type="button" variant="outline" onClick={() => setActiveTab("forms")}>
                         Cancel
                       </Button>
                       <div className="flex gap-2">
-                        <Button 
-                          type="button" 
+                        <Button
+                          type="button"
                           variant="secondary"
                           onClick={generatePreview}
                         >
@@ -807,7 +804,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </Form>
               )}
             </TabsContent>
-            
+
             {/* Preview Tab */}
             {formId && (
               <TabsContent value="preview" className="space-y-6">
@@ -825,12 +822,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         Open Preview in New Tab
                       </Button>
                     </div>
-                    
+
                     <div className="border rounded-lg overflow-hidden">
                       {previewUrl ? (
-                        <iframe 
-                          src={previewUrl} 
-                          className="w-full h-[600px]" 
+                        <iframe
+                          src={previewUrl}
+                          className="w-full h-[600px]"
                           title="Form Preview"
                         />
                       ) : (
@@ -843,7 +840,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                   </CardContent>
                 </Card>
-                
+
                 <Card>
                   <CardHeader>
                     <CardTitle>Embed Code</CardTitle>
