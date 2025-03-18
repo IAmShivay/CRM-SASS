@@ -198,9 +198,19 @@ export function Sidebar({
       href: "/dashboard",
     },
     {
-      label: "Leads Sources",
-      icon: Users,
+      label: "Lead Sources",
+      icon: Zap,
       href: "/leads-sources",
+    },
+    {
+      label: "Forms",
+      icon: SquareCode,
+      href: "/forms",
+    },
+    {
+      label: "Marketing",
+      icon: MessageSquare,
+      href: "/marketing/campaigns",
     },
     {
       label: "Leads",
