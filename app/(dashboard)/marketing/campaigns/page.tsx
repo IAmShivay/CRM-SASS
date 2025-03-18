@@ -91,7 +91,7 @@ const MarketingCampaignsPage = () => {
   const isCollapsed = useSelector((state: RootState) => state.sidebar.isCollapsed);
   const { data: activeWorkspace, isLoading: isWorkspaceLoading } = useGetActiveWorkspaceQuery();
   const workspaceId = activeWorkspace?.data?.id;
-  
+
   const [campaigns, setCampaigns] = useState<any[]>([]);
   const [templates, setTemplates] = useState<any[]>([]);
   const [leads, setLeads] = useState<any[]>([]);
@@ -100,7 +100,7 @@ const MarketingCampaignsPage = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("all");
   const [selectedTemplate, setSelectedTemplate] = useState<any>(null);
-  
+
   // Form hook
   const form = useForm<CampaignFormValues>({
     resolver: zodResolver(campaignSchema),
@@ -132,7 +132,7 @@ const MarketingCampaignsPage = () => {
     if (templateId && templates.length > 0) {
       const template = templates.find((t) => t.id === templateId);
       setSelectedTemplate(template);
-      
+
       if (template) {
         form.setValue("content", template.content);
       }
@@ -207,26 +207,26 @@ const MarketingCampaignsPage = () => {
   const openEditDialog = async (campaignId: string) => {
     try {
       setLoading(true);
-      
+
       // Fetch the campaign details
       const response = await fetch(`/api/marketing/campaigns?workspace_id=${workspaceId}&id=${campaignId}`);
       if (!response.ok) {
         throw new Error('Failed to fetch campaign details');
       }
-      
+
       const data = await response.json();
       const campaign = data.campaign;
-      
+
       if (!campaign) {
         throw new Error('Campaign not found');
       }
-      
+
       // Extract recipient lead IDs
       const recipientLeadIds = campaign.campaign_recipients.map((recipient: any) => recipient.lead_id);
-      
+
       // Convert scheduled_at string to Date if it exists
       const scheduledAt = campaign.scheduled_at ? new Date(campaign.scheduled_at) : undefined;
-      
+
       // Reset form with campaign data
       form.reset({
         name: campaign.name,
@@ -237,7 +237,7 @@ const MarketingCampaignsPage = () => {
         scheduled_at: scheduledAt,
         recipient_leads: recipientLeadIds,
       });
-      
+
       setEditingId(campaignId);
       setDialogOpen(true);
     } catch (error) {
@@ -252,20 +252,20 @@ const MarketingCampaignsPage = () => {
   const onSubmit = async (values: CampaignFormValues) => {
     try {
       setLoading(true);
-      
+
       // Convert 'none' template_id to null
       const formData = {
         ...values,
         workspace_id: workspaceId,
         template_id: values.template_id === 'none' ? null : values.template_id,
       };
-      
+
       // Format the scheduled_at date
       const formattedValues = {
         ...formData,
         scheduled_at: formData.scheduled_at ? formData.scheduled_at.toISOString() : undefined,
       };
-      
+
       let response;
       if (editingId) {
         // Update existing campaign
@@ -286,13 +286,13 @@ const MarketingCampaignsPage = () => {
           body: JSON.stringify(formattedValues),
         });
       }
-      
+
       if (!response.ok) {
         throw new Error('Failed to save campaign');
       }
-      
+
       toast.success(editingId ? 'Campaign updated successfully' : 'Campaign created successfully');
-      
+
       // Close dialog and refresh the campaigns list
       setDialogOpen(false);
       fetchCampaigns();
@@ -309,19 +309,19 @@ const MarketingCampaignsPage = () => {
     if (!confirm('Are you sure you want to delete this campaign? This action cannot be undone.')) {
       return;
     }
-    
+
     try {
       setLoading(true);
       const response = await fetch(`/api/marketing/campaigns?id=${id}`, {
         method: 'DELETE',
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to delete campaign');
       }
-      
+
       toast.success('Campaign deleted successfully');
-      
+
       // Refresh the campaigns list
       fetchCampaigns();
     } catch (error) {
@@ -337,7 +337,7 @@ const MarketingCampaignsPage = () => {
     if (!confirm('Are you sure you want to send this campaign now? This will send messages to all recipients.')) {
       return;
     }
-    
+
     try {
       setLoading(true);
       const response = await fetch(`/api/marketing/campaigns?id=${id}`, {
@@ -349,13 +349,13 @@ const MarketingCampaignsPage = () => {
           status: 'in_progress',
         }),
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to send campaign');
       }
-      
+
       toast.success('Campaign is now being sent');
-      
+
       // Refresh the campaigns list
       fetchCampaigns();
     } catch (error) {
@@ -417,9 +417,8 @@ const MarketingCampaignsPage = () => {
 
   return (
     <div
-      className={`grid align-center gap-0 md:gap-2 md:rounded-none rounded-[4px] transition-all duration-500 ease-in-out px-2 py-6 w-auto 
-      ${isCollapsed ? "md:ml-[80px]" : "md:ml-[250px]"}
-      overflow-hidden`}
+      className={`transition-all duration-500 ease-in-out md:px-4 md:py-6 py-2 px-2 ${isCollapsed ? "md:ml-[80px]" : "md:ml-[250px]"
+        } w-auto overflow-hidden`}
     >
       <Card className="w-full rounded-[16px] md:rounded-[4px] overflow-hidden">
         <CardHeader className="flex flex-row justify-between items-center bg-gray-100 dark:bg-gray-800 md:bg-white md:dark:bg-gray-900">
@@ -446,7 +445,7 @@ const MarketingCampaignsPage = () => {
               <TabsTrigger value="in_progress">In Progress</TabsTrigger>
               <TabsTrigger value="completed">Completed</TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value={activeTab}>
               {loading && campaigns.length === 0 ? (
                 <div className="flex justify-center py-10">
@@ -487,15 +486,15 @@ const MarketingCampaignsPage = () => {
                         </TableCell>
                         <TableCell>{campaign.recipient_count}</TableCell>
                         <TableCell>
-                          {campaign.scheduled_at 
+                          {campaign.scheduled_at
                             ? format(new Date(campaign.scheduled_at), 'PPP p')
                             : 'Not scheduled'}
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
                             {campaign.status === 'draft' && (
-                              <Button 
-                                variant="default" 
+                              <Button
+                                variant="default"
                                 size="sm"
                                 onClick={() => sendCampaign(campaign.id)}
                               >
@@ -503,15 +502,15 @@ const MarketingCampaignsPage = () => {
                                 Send
                               </Button>
                             )}
-                            <Button 
-                              variant="ghost" 
+                            <Button
+                              variant="ghost"
                               size="sm"
                               onClick={() => openEditDialog(campaign.id)}
                             >
                               <Edit className="h-4 w-4" />
                             </Button>
-                            <Button 
-                              variant="ghost" 
+                            <Button
+                              variant="ghost"
                               size="sm"
                               onClick={() => deleteCampaign(campaign.id)}
                             >
@@ -526,19 +525,19 @@ const MarketingCampaignsPage = () => {
               )}
             </TabsContent>
           </Tabs>
-          
+
           {/* Campaign Dialog */}
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogContent className="sm:max-w-[800px]">
               <DialogHeader>
                 <DialogTitle>{editingId ? "Edit Campaign" : "Create Campaign"}</DialogTitle>
                 <DialogDescription>
-                  {editingId 
-                    ? "Update the details of your marketing campaign." 
+                  {editingId
+                    ? "Update the details of your marketing campaign."
                     : "Create a new marketing campaign to reach your leads."}
                 </DialogDescription>
               </DialogHeader>
-              
+
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -555,15 +554,15 @@ const MarketingCampaignsPage = () => {
                         </FormItem>
                       )}
                     />
-                    
+
                     <FormField
                       control={form.control}
                       name="type"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Campaign Type</FormLabel>
-                          <Select 
-                            onValueChange={field.onChange} 
+                          <Select
+                            onValueChange={field.onChange}
                             defaultValue={field.value}
                           >
                             <FormControl>
@@ -583,7 +582,7 @@ const MarketingCampaignsPage = () => {
                       )}
                     />
                   </div>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormField
                       control={form.control}
@@ -591,8 +590,8 @@ const MarketingCampaignsPage = () => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Template</FormLabel>
-                          <Select 
-                            onValueChange={field.onChange} 
+                          <Select
+                            onValueChange={field.onChange}
                             defaultValue={field.value}
                           >
                             <FormControl>
@@ -618,7 +617,7 @@ const MarketingCampaignsPage = () => {
                         </FormItem>
                       )}
                     />
-                    
+
                     <FormField
                       control={form.control}
                       name="scheduled_at"
@@ -630,9 +629,8 @@ const MarketingCampaignsPage = () => {
                               <FormControl>
                                 <Button
                                   variant={"outline"}
-                                  className={`w-full pl-3 text-left font-normal ${
-                                    !field.value && "text-muted-foreground"
-                                  }`}
+                                  className={`w-full pl-3 text-left font-normal ${!field.value && "text-muted-foreground"
+                                    }`}
                                 >
                                   {field.value ? (
                                     format(field.value, "PPP p")
@@ -660,7 +658,7 @@ const MarketingCampaignsPage = () => {
                                     date.setMinutes(parseInt(minutes, 10));
                                     field.onChange(date);
                                   }}
-                                  value={field.value 
+                                  value={field.value
                                     ? `${field.value.getHours().toString().padStart(2, '0')}:${field.value.getMinutes().toString().padStart(2, '0')}`
                                     : ''
                                   }
@@ -676,7 +674,7 @@ const MarketingCampaignsPage = () => {
                       )}
                     />
                   </div>
-                  
+
                   <FormField
                     control={form.control}
                     name="content"
@@ -684,24 +682,24 @@ const MarketingCampaignsPage = () => {
                       <FormItem>
                         <FormLabel>Content</FormLabel>
                         <FormControl>
-                          <Textarea 
-                            placeholder="Enter your campaign content here..." 
+                          <Textarea
+                            placeholder="Enter your campaign content here..."
                             className="min-h-[200px]"
-                            {...field} 
+                            {...field}
                           />
                         </FormControl>
                         <FormDescription>
-                          {campaignType === 'email' 
-                            ? 'You can use HTML for email campaigns' 
+                          {campaignType === 'email'
+                            ? 'You can use HTML for email campaigns'
                             : campaignType === 'sms' || campaignType === 'whatsapp'
-                            ? 'Keep messages concise for better delivery rates'
-                            : 'Enter a script for phone calls'}
+                              ? 'Keep messages concise for better delivery rates'
+                              : 'Enter a script for phone calls'}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={form.control}
                     name="recipient_leads"
@@ -732,7 +730,7 @@ const MarketingCampaignsPage = () => {
                               <div className="text-muted-foreground text-sm">No recipients selected</div>
                             )}
                           </div>
-                          <Select 
+                          <Select
                             onValueChange={(value) => {
                               if (!field.value.includes(value)) {
                                 field.onChange([...field.value, value]);
@@ -760,7 +758,7 @@ const MarketingCampaignsPage = () => {
                       </FormItem>
                     )}
                   />
-                  
+
                   <DialogFooter>
                     <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
                       Cancel
