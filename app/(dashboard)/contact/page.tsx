@@ -527,10 +527,9 @@ export default function ContactPage() {
 
   return (
     <div
-      className={`p-6 transition-all duration-500 ease-in-out w-full 
-      ${isCollapsed ? "md:ml-[80px]" : "md:ml-[250px]"}
-      overflow-hidden `}
-    >
+    className={`transition-all duration-500 ease-in-out md:px-4 md:py-6 py-2 px-2 ${isCollapsed ? "md:ml-[80px]" : "md:ml-[250px]"
+      } w-auto overflow-hidden`}
+  >
       <div className="w-full rounded-lg">
         <div className="flex items-center justify-between p-3 md:p-4 border-b mb-4">
           <div className="flex items-center gap-2">
