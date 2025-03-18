@@ -21,6 +21,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
+import { Loader, LoadingOverlay } from "@/components/ui/loader";
 import {
   Table,
   TableBody,
@@ -43,7 +44,7 @@ import {
   Laptop,
   Smartphone,
   ExternalLink,
-  Loader2,
+  Palette,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store/store";
@@ -76,6 +77,7 @@ const LeadSourceManagerDocs: React.FC = () => {
 
   const [copied, setCopied] = useState<string | null>(null);
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const toggleRow = (id: string) => {
     setExpandedRow(expandedRow === id ? null : id);
@@ -85,6 +87,11 @@ const LeadSourceManagerDocs: React.FC = () => {
     navigator.clipboard.writeText(text);
     setCopied(id);
     setTimeout(() => setCopied(null), 2000);
+  };
+
+  const simulateLoading = () => {
+    setLoading(true);
+    setTimeout(() => setLoading(false), 2000);
   };
 
   return (
@@ -99,15 +106,15 @@ const LeadSourceManagerDocs: React.FC = () => {
             <div className="md:hidden lg:hidden w-2 h-2 pb-4 text-gray-700 dark:text-gray-300">
               <BookOpen />
             </div>
-            <CardTitle className="text-sm md:text-xl lg:text-2xl text-gray-900 dark:text-white">
+            <CardTitle className="text-sm md:text-xl lg:text-2xl gradient-heading">
               Lead Source Manager Documentation
             </CardTitle>
           </div>
           <Button
-            className="md:w-auto bg-primary dark:bg-primary-dark text-white dark:text-gray-700"
+            variant="gradient"
             onClick={() => window.open('https://github.com/yourusername/lead-source-manager', '_blank')}
           >
-            <Code className="mr-2 h-3 w-3 text-md md:h-4 md:w-4 text-gray-700 dark:text-gray-700" />
+            <Code className="mr-2 h-3 w-3 text-md md:h-4 md:w-4" />
             View Source
           </Button>
         </CardHeader>
@@ -120,6 +127,7 @@ const LeadSourceManagerDocs: React.FC = () => {
               <TabsTrigger value="usage">Usage Guide</TabsTrigger>
               <TabsTrigger value="integration">Integration</TabsTrigger>
               <TabsTrigger value="api">API Reference</TabsTrigger>
+              <TabsTrigger value="ui-components">UI Components</TabsTrigger>
             </TabsList>
             
             {/* Overview Tab */}
@@ -657,6 +665,159 @@ const LeadSourceManagerDocs: React.FC = () => {
                   </div>
                 </CardContent>
               </Card>
+            </TabsContent>
+            
+            {/* UI Components Tab */}
+            <TabsContent value="ui-components" className="space-y-6">
+              <div className="prose dark:prose-invert max-w-none">
+                <h2 className="text-2xl font-bold mb-4 text-gradient-primary-accent">UI Components</h2>
+                <p className="text-base text-gray-700 dark:text-gray-300 mb-6">
+                  The Lead Source Manager includes a variety of UI components with enhanced styling options.
+                  Below are examples of the available components and their color variants.
+                </p>
+                
+                <section className="mb-8">
+                  <h3 className="text-xl font-bold mb-4 text-gradient-primary">Button Variants</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                    <Button variant="default">Default</Button>
+                    <Button variant="secondary">Secondary</Button>
+                    <Button variant="accent">Accent</Button>
+                    <Button variant="destructive">Destructive</Button>
+                    <Button variant="outline">Outline</Button>
+                    <Button variant="ghost">Ghost</Button>
+                    <Button variant="link">Link</Button>
+                    <Button variant="success">Success</Button>
+                    <Button variant="warning">Warning</Button>
+                    <Button variant="info">Info</Button>
+                    <Button variant="purple">Purple</Button>
+                    <Button variant="teal">Teal</Button>
+                    <Button variant="gradient">Gradient</Button>
+                  </div>
+                  
+                  <h4 className="text-lg font-bold mb-3 text-gradient-accent">Gradient Button Classes</h4>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+                    <Button className="btn-gradient">Primary-Accent</Button>
+                    <Button className="btn-success">Success</Button>
+                    <Button className="btn-warning">Warning</Button>
+                    <Button className="btn-info">Info</Button>
+                    <Button className="btn-purple">Purple</Button>
+                    <Button className="btn-teal">Teal</Button>
+                  </div>
+                </section>
+                
+                <section className="mb-8">
+                  <h3 className="text-xl font-bold mb-4 text-gradient-purple">Text Gradient Styles</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div>
+                      <h4 className="text-gradient-primary text-lg font-bold mb-2">Primary Gradient</h4>
+                      <p>This text uses the primary color gradient.</p>
+                    </div>
+                    <div>
+                      <h4 className="text-gradient-accent text-lg font-bold mb-2">Accent Gradient</h4>
+                      <p>This text uses the accent color gradient.</p>
+                    </div>
+                    <div>
+                      <h4 className="text-gradient-primary-accent text-lg font-bold mb-2">Primary to Accent</h4>
+                      <p>This text transitions from primary to accent color.</p>
+                    </div>
+                    <div>
+                      <h4 className="text-gradient-purple text-lg font-bold mb-2">Purple Gradient</h4>
+                      <p>This text uses a purple color gradient.</p>
+                    </div>
+                    <div>
+                      <h4 className="text-gradient-teal text-lg font-bold mb-2">Teal Gradient</h4>
+                      <p>This text uses a teal color gradient.</p>
+                    </div>
+                  </div>
+                </section>
+                
+                <section className="mb-8">
+                  <h3 className="text-xl font-bold mb-4 text-gradient-teal">Loader Components</h3>
+                  <Card className="mb-6">
+                    <CardHeader>
+                      <CardTitle>Loader Variants</CardTitle>
+                    </CardHeader>
+                    <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div className="flex flex-col items-center">
+                        <Loader size="sm" variant="primary" />
+                        <p className="mt-2">Small Primary</p>
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <Loader size="md" variant="accent" />
+                        <p className="mt-2">Medium Accent</p>
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <Loader size="lg" variant="secondary" />
+                        <p className="mt-2">Large Secondary</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Loading Overlay Example</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <LoadingOverlay isLoading={loading}>
+                        <div className="p-6 border rounded-md">
+                          <p className="mb-4">This content will be overlaid with a loading indicator when the button below is clicked.</p>
+                          <Button onClick={simulateLoading} variant="accent">
+                            Simulate Loading
+                          </Button>
+                        </div>
+                      </LoadingOverlay>
+                    </CardContent>
+                  </Card>
+                </section>
+                
+                <section>
+                  <h3 className="text-xl font-bold mb-4 text-gradient-primary-accent">Card Styles</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <Card className="feature-card">
+                      <CardHeader>
+                        <CardTitle>Feature Card</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p>This card uses the feature-card class for styling.</p>
+                      </CardContent>
+                    </Card>
+                    
+                    <Card className="stats-card">
+                      <CardHeader>
+                        <CardTitle>Stats Card</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p>This card uses the stats-card class for styling.</p>
+                      </CardContent>
+                    </Card>
+                    
+                    <Card className="dashboard-card">
+                      <CardHeader>
+                        <CardTitle>Dashboard Card</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p>This card uses the dashboard-card class for styling.</p>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </section>
+                
+                <div className="mt-8 p-4 bg-muted rounded-md">
+                  <h4 className="text-lg font-bold mb-2 flex items-center">
+                    <Palette className="mr-2 h-5 w-5 text-primary" />
+                    UI Enhancement Guide
+                  </h4>
+                  <p className="mb-2">
+                    To use these enhanced UI components in your application:
+                  </p>
+                  <ol className="list-decimal list-inside space-y-2">
+                    <li>Import the component from the appropriate location</li>
+                    <li>Apply the desired variant or CSS class</li>
+                    <li>For text gradients, use the appropriate text-gradient-* class</li>
+                    <li>For custom loaders, import the Loader component and specify size and variant</li>
+                  </ol>
+                </div>
+              </div>
             </TabsContent>
           </Tabs>
         </CardContent>

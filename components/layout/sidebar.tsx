@@ -80,6 +80,7 @@ import { useDispatch, useSelector } from "react-redux";
 import useLeadNotifications from "@/hooks/useLeadNotifications";
 import { invalidateLeadsCacheOnWorkspaceChange, leadsApiExtended } from "@/lib/store/services/leadsApi";
 import { invalidateAllCacheOnWorkspaceChange } from "@/lib/store/utils/cacheInvalidation";
+import { Loader } from "@/components/ui/loader";
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
   logoSrc?: string;
@@ -344,13 +345,16 @@ export function Sidebar({
     };
   }, [workspacesData?.data]);
 
+  const [isWorkspaceSwitching, setIsWorkspaceSwitching] = useState(false);
+
   const handleWorkspaceChange = async (workspaceId: string) => {
     try {
+      // Find the workspace in the list
       const workspace = workspaces.find((w) => w.id === workspaceId);
       if (!workspace) return;
 
-      // Show loading state
-      toast.loading("Switching workspace...");
+      // Set loading state
+      setIsWorkspaceSwitching(true);
 
       // Update workspace status
       await updateWorkspaceStatus({ id: workspaceId, status: true });
@@ -374,13 +378,13 @@ export function Sidebar({
         router.refresh();
       }
 
-      // Dismiss loading toast and show success message
-      toast.dismiss();
+      // Show success message
       toast.success(`Switched to workspace: ${workspace.name}`);
     } catch (error) {
       console.error("Failed to change workspace:", error);
-      toast.dismiss();
-      toast.error("Failed to change workspace");
+      toast.error("Failed to switch workspace");
+    } finally {
+      setIsWorkspaceSwitching(false);
     }
   };
   // console.log(user)
@@ -388,6 +392,9 @@ export function Sidebar({
   console.log(user)
   return (
     <>
+      {isWorkspaceSwitching && (
+        <Loader fullScreen text="Switching workspace..." variant="accent" />
+      )}
       {/* Mobile Menu Button */}
       <Button
         variant="ghost"
@@ -438,7 +445,11 @@ export function Sidebar({
             )}>
               SC
             </div>
-            {!isCollapsed && <span className="font-semibold text-lg">SCRAFT</span>}
+            {!isCollapsed && (
+              <span className="font-bold text-xl bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
+                SCRAFT
+              </span>
+            )}
           </a>
 
           {/* Removing the close button from here since we now have a dedicated mobile menu button */}
@@ -827,7 +838,8 @@ export function Sidebar({
 
         {/* User Profile Section */}
         <div className={cn(
-          "border-t flex items-center left-0 w-full bg-white dark:bg-slate-800 dark:border-slate-700",
+          "border-t flex items-center left-0 w-full bg-white dark:bg-slate-900 dark:text-white shadow-lg transform transition-all duration-300 ease-in-out",
+          "md:translate-x-0",
           isCollapsed ? "p-2" : "p-4",
           "sticky bottom-0 z-10"
         )}>

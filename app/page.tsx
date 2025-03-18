@@ -42,14 +42,14 @@ export default function Home() {
         <div className="container max-w-6xl">
           <div className="flex flex-col md:flex-row items-center">
             <div className="md:w-1/2 mb-10 md:mb-0 md:pr-10">
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">
+              <h1 className="text-4xl md:text-5xl font-bold mb-6 gradient-heading">
                 Streamline Your Sales Process with SCRAFT CRM
               </h1>
               <p className="text-xl text-muted-foreground mb-8">
                 Manage leads, track sales, and grow your business with our all-in-one CRM solution.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" asChild>
+                <Button size="lg" className="btn-gradient" asChild>
                   <Link href="/register">
                     Get Started Free <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
@@ -62,7 +62,7 @@ export default function Home() {
               </div>
             </div>
             <div className="md:w-1/2">
-              <div className="rounded-lg shadow-2xl overflow-hidden">
+              <div className="rounded-lg shadow-2xl overflow-hidden border border-primary/20">
                 <img 
                   src="/dashboard-preview.png" 
                   alt="SCRAFT CRM Dashboard" 
@@ -81,15 +81,15 @@ export default function Home() {
       <section className="py-16">
         <div className="container max-w-6xl">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Powerful CRM Features</h2>
+            <h2 className="text-3xl font-bold mb-4 gradient-heading">Powerful CRM Features</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               Everything you need to manage your sales pipeline and grow your business.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="bg-card p-6 rounded-lg shadow-sm border">
-              <div className="mb-4 bg-primary/10 p-3 rounded-full w-12 h-12 flex items-center justify-center">
+            <div className="feature-card">
+              <div className="feature-icon-container mb-4">
                 <Users className="h-6 w-6 text-primary" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Lead Management</h3>
@@ -98,8 +98,8 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="bg-card p-6 rounded-lg shadow-sm border">
-              <div className="mb-4 bg-primary/10 p-3 rounded-full w-12 h-12 flex items-center justify-center">
+            <div className="feature-card">
+              <div className="feature-icon-container mb-4">
                 <BarChart3 className="h-6 w-6 text-primary" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Sales Analytics</h3>
@@ -108,8 +108,8 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="bg-card p-6 rounded-lg shadow-sm border">
-              <div className="mb-4 bg-primary/10 p-3 rounded-full w-12 h-12 flex items-center justify-center">
+            <div className="feature-card">
+              <div className="feature-icon-container mb-4">
                 <Mail className="h-6 w-6 text-primary" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Email Marketing</h3>
@@ -118,8 +118,8 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="bg-card p-6 rounded-lg shadow-sm border">
-              <div className="mb-4 bg-primary/10 p-3 rounded-full w-12 h-12 flex items-center justify-center">
+            <div className="feature-card">
+              <div className="feature-icon-container mb-4">
                 <Phone className="h-6 w-6 text-primary" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Call Center</h3>
@@ -128,8 +128,8 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="bg-card p-6 rounded-lg shadow-sm border">
-              <div className="mb-4 bg-primary/10 p-3 rounded-full w-12 h-12 flex items-center justify-center">
+            <div className="feature-card">
+              <div className="feature-icon-container mb-4">
                 <MessageSquare className="h-6 w-6 text-primary" />
               </div>
               <h3 className="text-xl font-semibold mb-2">SMS Marketing</h3>
@@ -138,8 +138,8 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="bg-card p-6 rounded-lg shadow-sm border">
-              <div className="mb-4 bg-primary/10 p-3 rounded-full w-12 h-12 flex items-center justify-center">
+            <div className="feature-card">
+              <div className="feature-icon-container mb-4">
                 <Zap className="h-6 w-6 text-primary" />
               </div>
               <h3 className="text-xl font-semibold mb-2">AI Integration</h3>
@@ -159,36 +159,36 @@ export default function Home() {
         <div className="container max-w-6xl">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
-              <h3 className="font-bold text-lg mb-4">SCRAFT CRM</h3>
+              <h3 className="font-bold text-lg mb-4 text-primary">SCRAFT CRM</h3>
               <p className="text-muted-foreground">
                 The all-in-one CRM solution for growing businesses.
               </p>
             </div>
             
             <div>
-              <h4 className="font-semibold mb-4">Product</h4>
+              <h4 className="font-semibold mb-4 text-secondary-foreground">Product</h4>
               <ul className="space-y-2">
-                <li><Link href="#" className="text-muted-foreground hover:text-foreground">Features</Link></li>
-                <li><Link href="#pricing" className="text-muted-foreground hover:text-foreground">Pricing</Link></li>
-                <li><Link href="#" className="text-muted-foreground hover:text-foreground">Integrations</Link></li>
+                <li><Link href="#" className="text-muted-foreground hover:text-primary transition-colors">Features</Link></li>
+                <li><Link href="#pricing" className="text-muted-foreground hover:text-primary transition-colors">Pricing</Link></li>
+                <li><Link href="#" className="text-muted-foreground hover:text-primary transition-colors">Integrations</Link></li>
               </ul>
             </div>
             
             <div>
-              <h4 className="font-semibold mb-4">Resources</h4>
+              <h4 className="font-semibold mb-4 text-secondary-foreground">Resources</h4>
               <ul className="space-y-2">
-                <li><Link href="#" className="text-muted-foreground hover:text-foreground">Documentation</Link></li>
-                <li><Link href="#" className="text-muted-foreground hover:text-foreground">Blog</Link></li>
-                <li><Link href="#" className="text-muted-foreground hover:text-foreground">Support</Link></li>
+                <li><Link href="#" className="text-muted-foreground hover:text-primary transition-colors">Documentation</Link></li>
+                <li><Link href="#" className="text-muted-foreground hover:text-primary transition-colors">Blog</Link></li>
+                <li><Link href="#" className="text-muted-foreground hover:text-primary transition-colors">Support</Link></li>
               </ul>
             </div>
             
             <div>
-              <h4 className="font-semibold mb-4">Company</h4>
+              <h4 className="font-semibold mb-4 text-secondary-foreground">Company</h4>
               <ul className="space-y-2">
-                <li><Link href="#" className="text-muted-foreground hover:text-foreground">About Us</Link></li>
-                <li><Link href="#" className="text-muted-foreground hover:text-foreground">Careers</Link></li>
-                <li><Link href="#" className="text-muted-foreground hover:text-foreground">Contact</Link></li>
+                <li><Link href="#" className="text-muted-foreground hover:text-primary transition-colors">About Us</Link></li>
+                <li><Link href="#" className="text-muted-foreground hover:text-primary transition-colors">Careers</Link></li>
+                <li><Link href="#" className="text-muted-foreground hover:text-primary transition-colors">Contact</Link></li>
               </ul>
             </div>
           </div>

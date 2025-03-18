@@ -58,7 +58,7 @@ export function Navbar() {
         <nav className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:hidden lg:hidden fixed top-0 left-0 right-0 z-50 ">
           <div className="flex h-16 items-center justify-between px-4">
             {/* Logo */}
-            <Link href="/" className="font-bold text-xl">
+            <Link href="/" className="font-bold text-xl bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
               CRM
             </Link>
 
@@ -78,7 +78,7 @@ export function Navbar() {
                 <SheetContent side="left" className="w-64 p-0">
                   <div className="flex flex-col h-full">
                     <div className="border-b p-4">
-                      <Link href="/" className="font-bold text-xl">
+                      <Link href="/" className="font-bold text-xl bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
                         CRM
                       </Link>
                     </div>
@@ -91,8 +91,8 @@ export function Navbar() {
                             href={item.href}
                             className={`flex items-center px-3 py-2 text-sm rounded-md transition-colors ${
                               pathname === item.href
-                                ? "bg-secondary text-foreground"
-                                : "text-muted-foreground hover:bg-secondary/50"
+                                ? "nav-item-active"
+                                : "text-muted-foreground hover:text-accent-foreground hover:bg-accent/10"
                             }`}
                           >
                             {item.name}
@@ -116,7 +116,7 @@ export function Navbar() {
         {/* Desktop Navbar */}
         <div className="hidden md:flex h-16 items-center px-4 md:px-6 lg:px-8 justify-between">
           {/* Logo */}
-          <Link href="/" className="font-bold text-xl mr-6">
+          <Link href="/" className="font-bold text-xl mr-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
             CRM
           </Link>
 
@@ -129,8 +129,8 @@ export function Navbar() {
                   href={item.href}
                   className={`text-sm font-medium transition-colors ${
                     pathname === item.href
-                      ? "text-foreground"
-                      : "text-muted-foreground hover:text-foreground"
+                      ? "text-primary border-b-2 border-primary pb-1"
+                      : "text-muted-foreground hover:text-primary"
                   }`}
                 >
                   {item.name}
@@ -143,13 +143,13 @@ export function Navbar() {
           {isHomePage && (
             <div className="flex-1 flex justify-center">
               <nav className="flex items-center space-x-4 lg:space-x-6">
-                <Link href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground">
+                <Link href="#features" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
                   Features
                 </Link>
-                <Link href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground">
+                <Link href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
                   Pricing
                 </Link>
-                <Link href="#faq" className="text-sm font-medium text-muted-foreground hover:text-foreground">
+                <Link href="#faq" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
                   FAQ
                 </Link>
               </nav>
@@ -166,10 +166,10 @@ export function Navbar() {
                   <UserNav />
                 ) : (
                   <div className="flex items-center space-x-2">
-                    <Button variant="ghost" size="sm" asChild>
+                    <Button variant="ghost" size="sm" asChild className="hover:text-primary">
                       <Link href="/login">Log in</Link>
                     </Button>
-                    <Button size="sm" asChild>
+                    <Button size="sm" asChild className="btn-gradient">
                       <Link href="/register">Sign up</Link>
                     </Button>
                   </div>
