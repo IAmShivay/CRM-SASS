@@ -16,9 +16,34 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     headers: { 'x-my-custom-header': 'my-app-name' },
   },
   realtime: {
-    timeout: 60000,
+    timeout: 30000, // Reduced from 60000 to prevent lingering connections
     params: {
-      eventsPerSecond: 10
+      eventsPerSecond: 5 // Reduced from 10 to lower resource usage
     }
   }
 });
+
+// Store active channel subscriptions
+const activeChannels: { id: string; unsubscribe: () => void }[] = [];
+
+// Helper function to add a channel subscription
+export const addChannelSubscription = (channelId: string, unsubscribe: () => void) => {
+  activeChannels.push({ id: channelId, unsubscribe });
+};
+
+// Helper function to explicitly close realtime subscriptions when needed
+export const closeRealtimeSubscriptions = () => {
+  try {
+    // Unsubscribe from all active channels
+    activeChannels.forEach(channel => {
+      channel.unsubscribe();
+    });
+    
+    // Clear the array
+    activeChannels.length = 0;
+    return true;
+  } catch (error) {
+    console.error('Error closing realtime subscriptions:', error);
+    return false;
+  }
+};
