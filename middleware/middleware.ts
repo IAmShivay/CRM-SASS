@@ -1,7 +1,7 @@
 import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs";
 import { NextRequest, NextResponse } from "next/server";
-import { getFromCache, setInCache } from './lib/redis';
-import { closeRealtimeSubscriptions } from './lib/supabaseServer';
+import { getFromCache, setInCache } from '../lib/redis';
+import { closeRealtimeSubscriptions } from '../lib/supabaseServer';
 
 // Cache TTL in seconds for different types of data
 const CACHE_TTL = {

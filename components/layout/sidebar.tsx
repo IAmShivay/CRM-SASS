@@ -198,25 +198,25 @@ export function Sidebar({
       href: "/dashboard",
     },
     {
-      label: "Lead Sources",
-      icon: Zap,
-      href: "/leads-sources",
-    },
-    {
       label: "Forms",
       icon: SquareCode,
       href: "/forms",
     },
     {
-      label: "Marketing",
-      icon: MessageSquare,
-      href: "/marketing/campaigns",
+      label: "Lead Sources",
+      icon: Zap,
+      href: "/leads-sources",
     },
     {
       label: "Leads",
       icon: SquareCode,
       href: "/leads",
       badge: totalLeads,
+    },
+    {
+      label: "Marketing",
+      icon: MessageSquare,
+      href: "/marketing/campaigns",
     },
     {
       label: "Contact",
@@ -402,9 +402,7 @@ export function Sidebar({
   console.log(user)
   return (
     <>
-      {isWorkspaceSwitching && (
-        <Loader fullScreen text="Switching workspace..." variant="accent" />
-      )}
+
       {/* Mobile Menu Button */}
       <Button
         variant="ghost"
@@ -430,7 +428,7 @@ export function Sidebar({
         <Button
           variant="ghost"
           size="icon"
-          className="absolute -right-4 top-6 hidden md:flex h-8 w-8 rounded-full bg-white dark:bg-slate-800 shadow-md"
+          className="absolute -right-4 top-4 hidden md:flex h-8 w-8 rounded-full bg-white dark:bg-slate-800 shadow-md"
           onClick={() => dispatch(toggleCollapse())}
         >
           {isCollapsed ? (
@@ -926,7 +924,7 @@ export function Sidebar({
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-slate-800 dark:text-white truncate">
-                    {user?.user_metadata.firstName  || user?.user_metadata.name}
+                    {user?.user_metadata.firstName || user?.user_metadata.name}
                   </p>
                   <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
                     {user?.email || "Email not available"}

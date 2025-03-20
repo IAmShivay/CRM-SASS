@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { useAppSelector } from "@/lib/store/hooks";
 import { X, Menu } from "lucide-react";
 import Link from "next/link";
-
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -31,32 +30,17 @@ export default function DashboardLayout({
   // }
 
   return (
-    <div className=" min-h-screen relative">
-      <div className="md:hidden lg:hidden flex h-16 items-center justify-between px-4 ">
-        <Link href="/" className="font-bold text-xl">
-          CRM
-        </Link>
-
-        <div className="flex items-center space-x-4">
-          <ThemeToggle />
-
-          <Button
-            variant="outline"
-            size="icon"
-            className="md:hidden lg:hidden bg-white dark:bg-slate-900 dark:text-white dark:border-slate-700"
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            {<Menu className="h-6 w-6" />}
-          </Button>
-        </div>
-      </div>
+    <div className="min-h-screen relative">
+      {/* Navbar - Added at the top */}
+      <Navbar />
+      
       <div className="flex relative">
         {/* Overlay for Blur Effect */}
         {isOpen && (
           <div className="fixed inset-0 bg-gray-900 opacity-70 z-50" />
         )}
 
-        <aside className="  border-r min-h-[calc(100vh-4rem)] z-[99]">
+        <aside className="border-r min-h-[calc(100vh-4rem)] z-[99]">
           <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
         </aside>
         <main className="flex-1 relative z-0">{children}</main>
