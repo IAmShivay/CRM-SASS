@@ -957,7 +957,7 @@ const LeadManagement: React.FC = () => {
           />
         )}
 
-        <CardHeader className="grid grid-cols-6 items-center grid-rows-3 md:gap-4 md:flex md:flex-row md:justify-between p-0 md:p-3 border-b-2 border-gray-200 md:border-none">
+        <CardHeader className="grid grid-cols-6 items-center grid-rows-3 md:gap-4 md:flex md:flex-row md:justify-between p-0 md:p-3 ">
           {/* Title */}
           <div className="md:bg-white dark:md:bg-black bg-white dark:bg-black flex items-center justify-between col-start-1 col-end-7 p-3 md:p-0">
             <div className="flex gap-2 items-center">
