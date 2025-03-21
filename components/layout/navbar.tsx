@@ -86,7 +86,7 @@ export function Navbar() {
       <SubscriptionBanner />
       <div >
         {/* Mobile Navbar */}
-        <div className="md:hidden bg-white dark:bg-[#0f172a] backdrop-blur fixed top-0 left-0 right-0 z-50 w-full">
+        <div className="md:hidden bg-white dark:bg-black backdrop-blur fixed top-0 left-0 right-0 z-50 w-full">
           <div className="relative flex h-16 items-center justify-center px-4">
             
             {/* Centered actions */}
@@ -104,7 +104,7 @@ export function Navbar() {
         </div>
 
         {/* Desktop Navbar */}
-        <div className="hidden md:flex bg-white dark:bg-[#0f172a] backdrop-blur fixed top-0 left-0 right-0 z-50 w-full h-16 items-center px-4 md:px-6 lg:px-8 justify-between">
+        <div className="hidden md:flex bg-white dark:bg-black backdrop-blur fixed top-0 left-0 right-0 z-50 w-full h-16 items-center px-4 md:px-6 lg:px-8 justify-between">
           
           <div className="flex-1">
             <span className="font-bold dark:text-white">Logo</span>
