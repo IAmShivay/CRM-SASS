@@ -84,7 +84,7 @@ export function Navbar() {
   return (
     <>
       <SubscriptionBanner />
-      <div className="border-b dark:border-slate-800">
+      <div >
         {/* Mobile Navbar */}
         <div className="md:hidden bg-white dark:bg-[#0f172a] backdrop-blur fixed top-0 left-0 right-0 z-50 w-full">
           <div className="relative flex h-16 items-center justify-center px-4">
