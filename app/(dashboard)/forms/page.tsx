@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store/store";
@@ -19,9 +19,15 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import {
+  Button
+} from "@/components/ui/button";
+import {
+  Input
+} from "@/components/ui/input";
+import {
+  Textarea
+} from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -38,8 +44,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Switch } from "@/components/ui/switch";
-import { Loader } from "@/components/ui/loader";
+import {
+  Switch
+} from "@/components/ui/switch";
+import {
+  Loader
+} from "@/components/ui/loader";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -66,10 +76,10 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-const FormsPage = () => {
+// Create a wrapper component that uses useSearchParams
+function FormsPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const formId = searchParams ? searchParams.get("id") : null;
   const isCollapsed = useSelector((state: RootState) => state.sidebar.isCollapsed);
   const { data: activeWorkspace, isLoading: isWorkspaceLoading } = useGetActiveWorkspaceQuery();
   const workspaceId = activeWorkspace?.data?.id;
@@ -134,10 +144,11 @@ const FormsPage = () => {
 
   // Fetch form details if editing an existing form
   useEffect(() => {
+    const formId = searchParams ? searchParams.get("id") : null;
     if (formId && workspaceId) {
       fetchFormDetails(formId);
     }
-  }, [formId, workspaceId]);
+  }, [searchParams, workspaceId]);
 
   // Fetch all forms for the current workspace
   const fetchForms = async () => {
@@ -189,7 +200,7 @@ const FormsPage = () => {
       setFormLoading(false);
     }
   };
-  console.log(webhooksData);
+
   // Create or update a form
   const onSubmit = async (values: FormValues) => {
     try {
@@ -203,9 +214,9 @@ const FormsPage = () => {
       };
 
       let response;
-      if (formId) {
+      if (searchParams ? searchParams.get("id") : null) {
         // Update existing form
-        response = await fetch(`/api/forms?id=${formId}`, {
+        response = await fetch(`/api/forms?id=${searchParams.get("id")}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
@@ -228,10 +239,10 @@ const FormsPage = () => {
       }
 
       const data = await response.json();
-      toast.success(formId ? 'Form updated successfully' : 'Form created successfully');
+      toast.success(searchParams ? searchParams.get("id") ? 'Form updated successfully' : 'Form created successfully' : 'Form created successfully');
 
       // Redirect to the form editor with the new form ID
-      if (!formId) {
+      if (!searchParams ? searchParams.get("id") : null) {
         router.push(`/forms?id=${data.form.id}`);
       }
 
@@ -264,7 +275,7 @@ const FormsPage = () => {
       toast.success('Form deleted successfully');
 
       // If currently editing this form, redirect to forms list
-      if (formId === id) {
+      if (searchParams ? searchParams.get("id") === id : null) {
         router.push('/forms');
       }
 
@@ -319,7 +330,7 @@ const FormsPage = () => {
                       'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                      formId: '${formId || "preview"}',
+                      formId: '${searchParams ? searchParams.get("id") || "preview" : "preview"}',
                       data,
                     }),
                   });
@@ -354,12 +365,12 @@ const FormsPage = () => {
 
   // Copy the form embed code
   const copyEmbedCode = () => {
-    if (!formId) {
+    if (!searchParams ? searchParams.get("id") : null) {
       toast.error('Please save the form first');
       return;
     }
 
-    const embedCode = `<iframe src="${window.location.origin}/embed/forms/${formId}" width="100%" height="500" frameborder="0"></iframe>`;
+    const embedCode = `<iframe src="${window.location.origin}/embed/forms/${searchParams.get("id")}" width="100%" height="500" frameborder="0"></iframe>`;
     navigator.clipboard.writeText(embedCode);
     toast.success('Embed code copied to clipboard');
   };
@@ -546,7 +557,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <TabsList className="w-full justify-start mb-6 overflow-x-auto">
               <TabsTrigger value="forms">My Forms</TabsTrigger>
               <TabsTrigger value="editor">Form Editor</TabsTrigger>
-              {formId && <TabsTrigger value="preview">Preview</TabsTrigger>}
+              {searchParams ? searchParams.get("id") && <TabsTrigger value="preview">Preview</TabsTrigger> : null}
             </TabsList>
 
             {/* Forms List Tab */}
@@ -806,7 +817,7 @@ document.addEventListener('DOMContentLoaded', function() {
             </TabsContent>
 
             {/* Preview Tab */}
-            {formId && (
+            {searchParams ? searchParams.get("id") && (
               <TabsContent value="preview" className="space-y-6">
                 <Card>
                   <CardHeader>
@@ -850,7 +861,7 @@ document.addEventListener('DOMContentLoaded', function() {
                   </CardHeader>
                   <CardContent>
                     <div className="bg-muted p-4 rounded-md font-mono text-sm overflow-x-auto">
-                      {`<iframe src="${window.location.origin}/embed/forms/${formId}" width="100%" height="500" frameborder="0"></iframe>`}
+                      {`<iframe src="${window.location.origin}/embed/forms/${searchParams.get("id")}" width="100%" height="500" frameborder="0"></iframe>`}
                     </div>
                     <div className="mt-4 flex justify-end">
                       <Button variant="outline" onClick={copyEmbedCode}>
@@ -861,7 +872,7 @@ document.addEventListener('DOMContentLoaded', function() {
                   </CardContent>
                 </Card>
               </TabsContent>
-            )}
+            ) : null}
           </Tabs>
         </CardContent>
       </Card>
@@ -869,4 +880,14 @@ document.addEventListener('DOMContentLoaded', function() {
   );
 };
 
-export default FormsPage;
+// Export the main component with Suspense
+export default function FormsPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <FormsPageContent />
+    </Suspense>
+  );
+}
+
+// Add dynamic export to prevent static generation
+export const dynamic = 'force-dynamic';

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,11 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { SUBSCRIPTION_PLANS, PlanTier, UserSubscription } from "@/lib/types/subscription";
 import { format, addDays } from "date-fns";
 
-export default function SubscriptionSuccessPage() {
+// Add dynamic export to prevent static generation
+export const dynamic = 'force-dynamic';
+
+// Create a wrapper component that uses useSearchParams
+function SubscriptionSuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createClientComponentClient();
@@ -22,9 +26,9 @@ export default function SubscriptionSuccessPage() {
         setLoading(true);
         
         // Get the session ID or plan from the URL
-        const sessionId = searchParams.get("session_id");
-        const planId = searchParams.get("plan") as PlanTier;
-        const cycle = searchParams.get("cycle") as "monthly" | "yearly";
+        const sessionId = searchParams?.get("session_id") || null;
+        const planId = searchParams?.get("plan") as PlanTier | null;
+        const cycle = searchParams?.get("cycle") as "monthly" | "yearly" | null;
         
         if (!sessionId && !planId) {
           // If no session ID or plan, redirect to subscription page
@@ -65,7 +69,6 @@ export default function SubscriptionSuccessPage() {
                 currentPeriodEnd: data.currentPeriodEnd,
                 cancelAtPeriodEnd: false,
                 paymentMethod: "stripe",
-                sessionId,
               },
             },
           });
@@ -78,7 +81,6 @@ export default function SubscriptionSuccessPage() {
             currentPeriodEnd: data.currentPeriodEnd,
             cancelAtPeriodEnd: false,
             paymentMethod: "stripe",
-            sessionId,
           });
         } else if (planId) {
           // For PayPal or direct updates, create a subscription based on the plan
@@ -86,6 +88,14 @@ export default function SubscriptionSuccessPage() {
             addDays(new Date(), cycle === "yearly" ? 365 : 30),
             "yyyy-MM-dd'T'HH:mm:ss'Z'"
           );
+          
+          // Get payment method with type safety
+          const paymentMethod = searchParams?.get("payment_method") || "unknown";
+          const safePaymentMethod = (
+            paymentMethod === "stripe" || 
+            paymentMethod === "paypal" || 
+            paymentMethod === "razorpay"
+          ) ? paymentMethod : undefined;
           
           // Update user subscription in Supabase
           const { error } = await supabase.auth.updateUser({
@@ -95,7 +105,7 @@ export default function SubscriptionSuccessPage() {
                 status: "active",
                 currentPeriodEnd,
                 cancelAtPeriodEnd: false,
-                paymentMethod: searchParams.get("payment_method") || "unknown",
+                paymentMethod: safePaymentMethod,
               },
             },
           });
@@ -107,7 +117,7 @@ export default function SubscriptionSuccessPage() {
             status: "active",
             currentPeriodEnd,
             cancelAtPeriodEnd: false,
-            paymentMethod: searchParams.get("payment_method") || "unknown",
+            paymentMethod: safePaymentMethod,
           });
         }
       } catch (error) {
@@ -174,5 +184,14 @@ export default function SubscriptionSuccessPage() {
         </CardFooter>
       </Card>
     </div>
+  );
+}
+
+// Export the main component with Suspense
+export default function SubscriptionSuccessPage() {
+  return (
+    <Suspense fallback={<div className="container max-w-md py-12">Loading...</div>}>
+      <SubscriptionSuccessContent />
+    </Suspense>
   );
 }
