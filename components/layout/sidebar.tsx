@@ -682,7 +682,7 @@ export function Sidebar({
                     onClick={() => setIsOpen(false)}
                     asChild
                   >
-                    <Link href={route.href}>
+                    <Link href={route.href} prefetch={true} passHref>
                       <route.icon className="h-4 w-4 text-slate-600 dark:text-slate-300" />
                       {!isCollapsed && (
                         <>
