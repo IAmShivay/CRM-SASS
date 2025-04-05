@@ -1,4 +1,3 @@
-
 "use client";
 import React from "react";
 import { useEffect, useState } from "react";
@@ -21,6 +20,7 @@ import {
   Briefcase,
   Loader2,
   Upload,
+  Key,
 } from "lucide-react";
 import {
   AlertDialog,
@@ -59,6 +59,12 @@ interface ProfileDetails {
     twitter?: string;
     github?: string;
   };
+  apiKeys?: {
+    openAI?: string;
+    togetherAPI?: string;
+    reoonEmail?: string;
+    bigDataCloud?: string;
+  };
 }
 
 function EditProfileDialog({
@@ -85,6 +91,10 @@ function EditProfileDialog({
     twitter: profileData.socialLinks.twitter || "",
     github: profileData.socialLinks.github || "",
     avatar: profileData.personalInfo.avatar,
+    openAI: profileData.apiKeys?.openAI || "",
+    togetherAPI: profileData.apiKeys?.togetherAPI || "",
+    reoonEmail: profileData.apiKeys?.reoonEmail || "",
+    bigDataCloud: profileData.apiKeys?.bigDataCloud || "",
   });
   const [loading, setLoading] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -358,6 +368,59 @@ function EditProfileDialog({
             />
           </div>
 
+          <div className="space-y-2">
+            <Label htmlFor="openAI">OpenAI API Key</Label>
+            <Input
+              id="openAI"
+              value={formData.openAI}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, openAI: e.target.value }))
+              }
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="togetherAPI">Together API Key</Label>
+            <Input
+              id="togetherAPI"
+              value={formData.togetherAPI}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  togetherAPI: e.target.value,
+                }))
+              }
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="reoonEmail">Reoon Email API Key</Label>
+            <Input
+              id="reoonEmail"
+              value={formData.reoonEmail}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  reoonEmail: e.target.value,
+                }))
+              }
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="bigDataCloud">Big Data Cloud API Key</Label>
+            <Input
+              id="bigDataCloud"
+              value={formData.bigDataCloud}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  bigDataCloud: e.target.value,
+                }))
+              }
+            />
+          </div>
+
           <div className="flex justify-end gap-4 pt-4">
             <Button
               type="button"
@@ -403,6 +466,12 @@ export default function ProfileDetailsPage() {
       startDate: "N/A",
     },
     socialLinks: {},
+    apiKeys: {
+      openAI: "",
+      togetherAPI: "",
+      reoonEmail: "",
+      bigDataCloud: "",
+    },
   });
 
   useEffect(() => {
@@ -418,6 +487,7 @@ export default function ProfileDetailsPage() {
         if (user) {
           setUser(user);
           const metadata = user.user_metadata;
+          console.log("User metadata:", metadata); // Debug log to see what's in the metadata
 
           setProfileData({
             personalInfo: {
@@ -439,6 +509,12 @@ export default function ProfileDetailsPage() {
               twitter: metadata.twitter,
               github: metadata.github,
             },
+            apiKeys: {
+              openAI: metadata.openAI || "",
+              togetherAPI: metadata.togetherAPI || "",
+              reoonEmail: metadata.reoonEmail || "",
+              bigDataCloud: metadata.bigDataCloud || "",
+            },
           });
         }
       } catch (error) {
@@ -453,17 +529,43 @@ export default function ProfileDetailsPage() {
 
   const handleProfileUpdate = async (formData: any) => {
     try {
-      const { data, error } = await supabase.auth.updateUser({
-        data: formData,
+      setLoading(true);
+      console.log("Updating profile with data:", {
+        openAI: formData.openAI ? "API key present" : "No API key",
+        togetherAPI: formData.togetherAPI ? "API key present" : "No API key",
+        reoonEmail: formData.reoonEmail ? "API key present" : "No API key",
+        bigDataCloud: formData.bigDataCloud ? "API key present" : "No API key",
       });
+      
+      const { error } = await supabase.auth.updateUser({
+        data: {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          phone: formData.phone,
+          dateOfBirth: formData.dateOfBirth,
+          title: formData.title,
+          department: formData.department,
+          company: formData.company,
+          startDate: formData.startDate,
+          avatar: formData.avatar,
+          linkedin: formData.linkedin,
+          twitter: formData.twitter,
+          github: formData.github,
+          openAI: formData.openAI,
+          togetherAPI: formData.togetherAPI,
+          reoonEmail: formData.reoonEmail,
+          bigDataCloud: formData.bigDataCloud,
+        },
+      });
+
       if (error) throw error;
-      toast.success(CRM_MESSAGES.PROFILE_UPDATED);
-      // Update local state with new data
+
+      // Update local state
       setProfileData({
         personalInfo: {
           firstName: formData.firstName,
           lastName: formData.lastName,
-          email: user.email,
+          email: profileData.personalInfo.email,
           phone: formData.phone,
           avatar: formData.avatar,
           dateOfBirth: formData.dateOfBirth,
@@ -479,10 +581,19 @@ export default function ProfileDetailsPage() {
           twitter: formData.twitter,
           github: formData.github,
         },
+        apiKeys: {
+          openAI: formData.openAI,
+          togetherAPI: formData.togetherAPI,
+          reoonEmail: formData.reoonEmail,
+          bigDataCloud: formData.bigDataCloud,
+        },
       });
+      toast.success(CRM_MESSAGES.PROFILE_UPDATED);
     } catch (error) {
       console.error("Error updating profile:", error);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
   // const handleDeleteProfile = async () => {
@@ -574,9 +685,7 @@ export default function ProfileDetailsPage() {
         <Card className="md:col-span-1">
           <CardContent className="pt-6  flex flex-col items-center">
             <Avatar
-              className="h-24 md:h-32 w-24 md:w
-
--32 mb-4"
+              className="h-24 md:h-32 w-24 md:w-32 mb-4"
             >
               <AvatarImage
                 src={profileData.personalInfo.avatar}
@@ -621,31 +730,77 @@ export default function ProfileDetailsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 md:flex md:flex-col gap-4">
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-muted-foreground">Company</p>
-                <p className="font-semibold">
+                <p className="text-sm text-muted-foreground">Job Title</p>
+                <p className="font-medium">
+                  {profileData.professionalInfo.title}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Department</p>
+                <p className="font-medium">
+                  {profileData.professionalInfo.department}
+                </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-muted-foreground">Company</p>
+                <p className="font-medium">
                   {profileData.professionalInfo.company}
                 </p>
               </div>
               <div>
-                <p className="text-muted-foreground">Department</p>
-                <p className="font-semibold">
-                  {profileData.professionalInfo.department}
-                </p>
-              </div>
-              <div>
-                <p className="text-muted-foreground">Start Date</p>
-                <p className="font-semibold">
+                <p className="text-sm text-muted-foreground">Start Date</p>
+                <p className="font-medium">
                   {profileData.professionalInfo.startDate}
                 </p>
               </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="md:col-span-3 p-4">
+          <CardHeader>
+            <CardTitle className="flex items-center mb-2 text-[1.2rem] md:text-2xl">
+              <Key className="mr-2" /> API Keys
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <p className="text-muted-foreground">Experience</p>
-                <p className="font-semibold">
-                  {calculateYearsOfExperience(
-                    profileData.professionalInfo.startDate
-                  )}
+                <p className="text-sm text-muted-foreground">OpenAI API Key</p>
+                <p className="font-medium">
+                  {profileData.apiKeys?.openAI && profileData.apiKeys.openAI.length > 9 ? 
+                    `${profileData.apiKeys.openAI.substring(0, 5)}...${profileData.apiKeys.openAI.substring(profileData.apiKeys.openAI.length - 4)}` : 
+                    profileData.apiKeys?.openAI ? profileData.apiKeys.openAI : "Not set"}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Together API Key</p>
+                <p className="font-medium">
+                  {profileData.apiKeys?.togetherAPI && profileData.apiKeys.togetherAPI.length > 9 ? 
+                    `${profileData.apiKeys.togetherAPI.substring(0, 5)}...${profileData.apiKeys.togetherAPI.substring(profileData.apiKeys.togetherAPI.length - 4)}` : 
+                    profileData.apiKeys?.togetherAPI ? profileData.apiKeys.togetherAPI : "Not set"}
+                </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-muted-foreground">Reoon Email API Key</p>
+                <p className="font-medium">
+                  {profileData.apiKeys?.reoonEmail && profileData.apiKeys.reoonEmail.length > 9 ? 
+                    `${profileData.apiKeys.reoonEmail.substring(0, 5)}...${profileData.apiKeys.reoonEmail.substring(profileData.apiKeys.reoonEmail.length - 4)}` : 
+                    profileData.apiKeys?.reoonEmail ? profileData.apiKeys.reoonEmail : "Not set"}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Big Data Cloud API Key</p>
+                <p className="font-medium">
+                  {profileData.apiKeys?.bigDataCloud && profileData.apiKeys.bigDataCloud.length > 9 ? 
+                    `${profileData.apiKeys.bigDataCloud.substring(0, 5)}...${profileData.apiKeys.bigDataCloud.substring(profileData.apiKeys.bigDataCloud.length - 4)}` : 
+                    profileData.apiKeys?.bigDataCloud ? profileData.apiKeys.bigDataCloud : "Not set"}
                 </p>
               </div>
             </div>

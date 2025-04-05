@@ -96,12 +96,11 @@ const LeadSourceManagerDocs: React.FC = () => {
 
   return (
     <div
-      className={`grid align-center gap-0 md:gap-2 md:rounded-none rounded-[4px] transition-all duration-500 ease-in-out px-2 py-6 w-auto 
-      ${isCollapsed ? "md:ml-[80px]" : "md:ml-[250px]"}
-      overflow-hidden`}
+      className={`transition-all duration-500 ease-in-out md:px-4 md:py-6 py-2 px-2 ${isCollapsed ? "md:ml-[80px]" : "md:ml-[250px]"
+        } w-auto overflow-hidden`}
     >
       <Card className="w-full rounded-[16px] md:rounded-[4px] overflow-hidden">
-        <CardHeader className="flex flex-row justify-between items-center bg-gray-100 dark:bg-gray-800 md:bg-white md:dark:bg-gray-900">
+      <CardHeader className="flex flex-row justify-between items-center bg-white dark:bg-black md:bg-white md:dark:bg-black">
           <div className="flex gap-6">
             <div className="md:hidden lg:hidden w-2 h-2 pb-4 text-gray-700 dark:text-gray-300">
               <BookOpen />
@@ -129,17 +128,17 @@ const LeadSourceManagerDocs: React.FC = () => {
               <TabsTrigger value="api">API Reference</TabsTrigger>
               <TabsTrigger value="ui-components">UI Components</TabsTrigger>
             </TabsList>
-            
+
             {/* Overview Tab */}
             <TabsContent value="overview" className="space-y-6">
               <div className="prose dark:prose-invert max-w-none">
                 <h2 className="text-2xl font-bold mb-4">What is Lead Source Manager?</h2>
                 <p className="text-base text-gray-700 dark:text-gray-300">
-                  Lead Source Manager is a React component that enables you to create and manage webhook endpoints 
-                  for lead generation. It provides a user-friendly interface to handle multiple lead sources, 
+                  Lead Source Manager is a React component that enables you to create and manage webhook endpoints
+                  for lead generation. It provides a user-friendly interface to handle multiple lead sources,
                   track their performance, and integrate with external platforms.
                 </p>
-                
+
                 <div className="grid md:grid-cols-2 gap-4 mt-6">
                   <Card>
                     <CardHeader className="pb-2">
@@ -154,7 +153,7 @@ const LeadSourceManagerDocs: React.FC = () => {
                       </p>
                     </CardContent>
                   </Card>
-                  
+
                   <Card>
                     <CardHeader className="pb-2">
                       <CardTitle className="text-lg flex items-center">
@@ -168,7 +167,7 @@ const LeadSourceManagerDocs: React.FC = () => {
                       </p>
                     </CardContent>
                   </Card>
-                  
+
                   <Card>
                     <CardHeader className="pb-2">
                       <CardTitle className="text-lg flex items-center">
@@ -182,7 +181,7 @@ const LeadSourceManagerDocs: React.FC = () => {
                       </p>
                     </CardContent>
                   </Card>
-                  
+
                   <Card>
                     <CardHeader className="pb-2">
                       <CardTitle className="text-lg flex items-center">
@@ -200,7 +199,7 @@ const LeadSourceManagerDocs: React.FC = () => {
                 </div>
               </div>
             </TabsContent>
-            
+
             {/* Installation Tab */}
             <TabsContent value="installation" className="space-y-6">
               <Card>
@@ -214,12 +213,12 @@ const LeadSourceManagerDocs: React.FC = () => {
                   <div>
                     <h3 className="text-lg font-medium mb-2">Prerequisites</h3>
                     <p className="mb-2">Make sure you have the following dependencies installed:</p>
-                    
+
                     <div className="relative mt-2 rounded-md bg-slate-950 p-4">
                       <div className="absolute right-4 top-4">
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           className="h-6 w-6 text-slate-400 hover:text-slate-100"
                           onClick={() => copyToClipboard("deps", `npm install @/components/ui lucide-react react-hook-form @hookform/resolvers zod uuid sonner`)}
                         >
@@ -231,16 +230,16 @@ const LeadSourceManagerDocs: React.FC = () => {
                       </pre>
                     </div>
                   </div>
-                  
+
                   <div>
                     <h3 className="text-lg font-medium mb-2">Component Import</h3>
                     <p className="mb-2">Import the component into your project:</p>
-                    
+
                     <div className="relative mt-2 rounded-md bg-slate-950 p-4">
                       <div className="absolute right-4 top-4">
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           className="h-6 w-6 text-slate-400 hover:text-slate-100"
                           onClick={() => copyToClipboard("import", `import LeadSourceManager from "@/components/LeadSourceManager";`)}
                         >
@@ -252,16 +251,16 @@ const LeadSourceManagerDocs: React.FC = () => {
                       </pre>
                     </div>
                   </div>
-                  
+
                   <div>
                     <h3 className="text-lg font-medium mb-2">Component Usage</h3>
                     <p className="mb-2">Add the component to your page:</p>
-                    
+
                     <div className="relative mt-2 rounded-md bg-slate-950 p-4">
                       <div className="absolute right-4 top-4">
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           className="h-6 w-6 text-slate-400 hover:text-slate-100"
                           onClick={() => copyToClipboard("usage", `export default function LeadSourcesPage() {
   return (
@@ -288,7 +287,7 @@ const LeadSourceManagerDocs: React.FC = () => {
                 </CardContent>
               </Card>
             </TabsContent>
-            
+
             {/* Usage Guide Tab */}
             <TabsContent value="usage" className="space-y-6">
               <Card>
@@ -313,30 +312,30 @@ const LeadSourceManagerDocs: React.FC = () => {
                           <li>Click <strong>&quot;Add Source&quot;</strong> to create the webhook.</li>
                           <li>A unique webhook URL will be automatically generated.</li>
                         </ol>
-                        
+
                         <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md">
                           <p className="text-sm font-medium mb-2">💡 Tip</p>
                           <p className="text-sm">Use descriptive names and types to easily identify your lead sources later.</p>
                         </div>
                       </AccordionContent>
                     </AccordionItem>
-                    
+
                     <AccordionItem value="manage">
                       <AccordionTrigger>Managing Lead Sources</AccordionTrigger>
                       <AccordionContent className="space-y-4">
                         <h4 className="text-md font-medium">Copying Webhook URLs</h4>
                         <p>Click the <strong>Copy</strong> icon next to any webhook URL to copy it to your clipboard.</p>
-                        
+
                         <h4 className="text-md font-medium">Enabling/Disabling Sources</h4>
                         <p>Toggle the <strong>Switch</strong> in the Status column to enable or disable a lead source.</p>
-                        
+
                         <h4 className="text-md font-medium">Editing a Source</h4>
                         <ol className="list-decimal list-inside space-y-1">
                           <li>Click the <strong>Pencil</strong> icon in the Actions column.</li>
                           <li>Modify the source details as needed.</li>
                           <li>Click <strong>&quot;Update Source&quot;</strong> to save changes.</li>
                         </ol>
-                        
+
                         <h4 className="text-md font-medium">Deleting a Source</h4>
                         <ol className="list-decimal list-inside space-y-1">
                           <li>Click the <strong>Trash</strong> icon in the Actions column.</li>
@@ -344,7 +343,7 @@ const LeadSourceManagerDocs: React.FC = () => {
                         </ol>
                       </AccordionContent>
                     </AccordionItem>
-                    
+
                     <AccordionItem value="mobile">
                       <AccordionTrigger>Mobile Experience</AccordionTrigger>
                       <AccordionContent>
@@ -359,7 +358,7 @@ const LeadSourceManagerDocs: React.FC = () => {
                   </Accordion>
                 </CardContent>
               </Card>
-              
+
               <Card>
                 <CardHeader>
                   <CardTitle>Example Lead Sources Table</CardTitle>
@@ -397,7 +396,7 @@ const LeadSourceManagerDocs: React.FC = () => {
                 </CardContent>
               </Card>
             </TabsContent>
-            
+
             {/* Integration Tab */}
             <TabsContent value="integration" className="space-y-6">
               <Card>
@@ -409,12 +408,12 @@ const LeadSourceManagerDocs: React.FC = () => {
                   <div>
                     <h3 className="text-lg font-medium mb-2">Webhook Structure</h3>
                     <p className="mb-2">The generated webhook URL follows this format:</p>
-                    
+
                     <div className="relative mt-2 rounded-md bg-slate-950 p-4">
                       <div className="absolute right-4 top-4">
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           className="h-6 w-6 text-slate-400 hover:text-slate-100"
                           onClick={() => copyToClipboard("webhook-url", `{BASE_URL}/leads?action=getLeads&sourceId={SOURCE_ID}&workspaceId={WORKSPACE_ID}`)}
                         >
@@ -426,16 +425,16 @@ const LeadSourceManagerDocs: React.FC = () => {
                       </pre>
                     </div>
                   </div>
-                  
+
                   <div>
                     <h3 className="text-lg font-medium mb-2">Sending Data to Webhooks</h3>
                     <p className="mb-2">To send leads to your webhook, make a POST request with this JSON structure:</p>
-                    
+
                     <div className="relative mt-2 rounded-md bg-slate-950 p-4">
                       <div className="absolute right-4 top-4">
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           className="h-6 w-6 text-slate-400 hover:text-slate-100"
                           onClick={() => copyToClipboard("webhook-payload", `{
   "lead": {
@@ -471,11 +470,11 @@ const LeadSourceManagerDocs: React.FC = () => {
                       </pre>
                     </div>
                   </div>
-                  
+
                   <div>
                     <h3 className="text-lg font-medium mb-2">Supported Integration Platforms</h3>
                     <p className="mb-2">The Lead Source Manager works seamlessly with:</p>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                       <Card>
                         <CardHeader className="pb-2">
@@ -490,7 +489,7 @@ const LeadSourceManagerDocs: React.FC = () => {
                           </ul>
                         </CardContent>
                       </Card>
-                      
+
                       <Card>
                         <CardHeader className="pb-2">
                           <CardTitle className="text-md">CRM Systems</CardTitle>
@@ -504,7 +503,7 @@ const LeadSourceManagerDocs: React.FC = () => {
                           </ul>
                         </CardContent>
                       </Card>
-                      
+
                       <Card>
                         <CardHeader className="pb-2">
                           <CardTitle className="text-md">Marketing Platforms</CardTitle>
@@ -518,7 +517,7 @@ const LeadSourceManagerDocs: React.FC = () => {
                           </ul>
                         </CardContent>
                       </Card>
-                      
+
                       <Card>
                         <CardHeader className="pb-2">
                           <CardTitle className="text-md">Automation Tools</CardTitle>
@@ -537,7 +536,7 @@ const LeadSourceManagerDocs: React.FC = () => {
                 </CardContent>
               </Card>
             </TabsContent>
-            
+
             {/* API Reference Tab */}
             <TabsContent value="api" className="space-y-6">
               <Card>
@@ -582,7 +581,7 @@ const LeadSourceManagerDocs: React.FC = () => {
                       </TableRow>
                     </TableBody>
                   </Table>
-                  
+
                   <div className="mt-6">
                     <h3 className="text-lg font-medium mb-3">Component Props</h3>
                     <Table>
@@ -622,14 +621,14 @@ const LeadSourceManagerDocs: React.FC = () => {
                       </TableBody>
                     </Table>
                   </div>
-                  
+
                   <div className="mt-6">
                     <h3 className="text-lg font-medium mb-3">Source Type Definition</h3>
                     <div className="relative mt-2 rounded-md bg-slate-950 p-4">
                       <div className="absolute right-4 top-4">
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           className="h-6 w-6 text-slate-400 hover:text-slate-100"
                           onClick={() => copyToClipboard("type-def", `export type Source = {
   webhook?: string; // URL as a string
@@ -666,7 +665,7 @@ const LeadSourceManagerDocs: React.FC = () => {
                 </CardContent>
               </Card>
             </TabsContent>
-            
+
             {/* UI Components Tab */}
             <TabsContent value="ui-components" className="space-y-6">
               <div className="prose dark:prose-invert max-w-none">
@@ -675,7 +674,7 @@ const LeadSourceManagerDocs: React.FC = () => {
                   The Lead Source Manager includes a variety of UI components with enhanced styling options.
                   Below are examples of the available components and their color variants.
                 </p>
-                
+
                 <section className="mb-8">
                   <h3 className="text-xl font-bold mb-4 text-gradient-primary">Button Variants</h3>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
@@ -693,7 +692,7 @@ const LeadSourceManagerDocs: React.FC = () => {
                     <Button variant="teal">Teal</Button>
                     <Button variant="gradient">Gradient</Button>
                   </div>
-                  
+
                   <h4 className="text-lg font-bold mb-3 text-gradient-accent">Gradient Button Classes</h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
                     <Button className="btn-gradient">Primary-Accent</Button>
@@ -704,7 +703,7 @@ const LeadSourceManagerDocs: React.FC = () => {
                     <Button className="btn-teal">Teal</Button>
                   </div>
                 </section>
-                
+
                 <section className="mb-8">
                   <h3 className="text-xl font-bold mb-4 text-gradient-purple">Text Gradient Styles</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
@@ -730,7 +729,7 @@ const LeadSourceManagerDocs: React.FC = () => {
                     </div>
                   </div>
                 </section>
-                
+
                 <section className="mb-8">
                   <h3 className="text-xl font-bold mb-4 text-gradient-teal">Loader Components</h3>
                   <Card className="mb-6">
@@ -752,7 +751,7 @@ const LeadSourceManagerDocs: React.FC = () => {
                       </div>
                     </CardContent>
                   </Card>
-                  
+
                   <Card>
                     <CardHeader>
                       <CardTitle>Loading Overlay Example</CardTitle>
@@ -769,7 +768,7 @@ const LeadSourceManagerDocs: React.FC = () => {
                     </CardContent>
                   </Card>
                 </section>
-                
+
                 <section>
                   <h3 className="text-xl font-bold mb-4 text-gradient-primary-accent">Card Styles</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -781,7 +780,7 @@ const LeadSourceManagerDocs: React.FC = () => {
                         <p>This card uses the feature-card class for styling.</p>
                       </CardContent>
                     </Card>
-                    
+
                     <Card className="stats-card">
                       <CardHeader>
                         <CardTitle>Stats Card</CardTitle>
@@ -790,7 +789,7 @@ const LeadSourceManagerDocs: React.FC = () => {
                         <p>This card uses the stats-card class for styling.</p>
                       </CardContent>
                     </Card>
-                    
+
                     <Card className="dashboard-card">
                       <CardHeader>
                         <CardTitle>Dashboard Card</CardTitle>
@@ -801,7 +800,7 @@ const LeadSourceManagerDocs: React.FC = () => {
                     </Card>
                   </div>
                 </section>
-                
+
                 <div className="mt-8 p-4 bg-muted rounded-md">
                   <h4 className="text-lg font-bold mb-2 flex items-center">
                     <Palette className="mr-2 h-5 w-5 text-primary" />
