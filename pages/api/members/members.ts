@@ -77,14 +77,13 @@ export default async function handler(
             `
               <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 5px;">
                 <h2 style="color: #333; margin-bottom: 20px;">Workspace Invitation</h2>
-                <p style="margin-bottom: 15px; color: #555; font-size: 16px;">You have been added to a workspace. Please login to your account to view the workspace.</p>
+                <p style="margin-bottom: 15px; color: #555; font-size: 16px;">You have been added to a workspace. Please click the button below to view and accept your invitation.</p>
                 <p style="margin-bottom: 25px; color: #777; font-size: 14px;"><strong>Note:</strong> Your invitation expires in 2 hours.</p>
                 
                 <div style="text-align: center; margin: 30px 0;">
-                  <a href="${process.env.PUBLIC_URL}api/auth?workspaceId=${workspaceId}&email=${email}&status=${status}&action=acceptInvite" 
-                     style="display: inline-block; background-color: #4CAF50; color: white; padding: 12px 24px; text-align: center; font-size: 16px; border: none; border-radius: 5px; cursor: pointer; text-decoration: none;"
-                     onclick="return confirm('Are you sure you want to accept this invitation? Click OK to join the workspace.')">
-                    Accept Invite
+                  <a href="${process.env.PUBLIC_URL}accept-invite?workspaceId=${workspaceId}&email=${email}&status=${status}" 
+                     style="display: inline-block; background-color: #4CAF50; color: white; padding: 12px 24px; text-align: center; font-size: 16px; border: none; border-radius: 5px; cursor: pointer; text-decoration: none;">
+                    View Invitation
                   </a>
                 </div>
                 
@@ -159,14 +158,13 @@ export default async function handler(
             `
               <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 5px;">
                 <h2 style="color: #333; margin-bottom: 20px;">Workspace Invitation</h2>
-                <p style="margin-bottom: 15px; color: #555; font-size: 16px;">You have been added to a workspace. Please login to your account to view the workspace.</p>
+                <p style="margin-bottom: 15px; color: #555; font-size: 16px;">You have been added to a workspace. Please click the button below to view and accept your invitation.</p>
                 <p style="margin-bottom: 25px; color: #777; font-size: 14px;"><strong>Note:</strong> Your invitation expires in 2 hours.</p>
                 
                 <div style="text-align: center; margin: 30px 0;">
-                  <a href="${process.env.PUBLIC_URL}api/auth?workspaceId=${workspaceId}&email=${email}&status=${status}&action=acceptInvite" 
-                     style="display: inline-block; background-color: #4CAF50; color: white; padding: 12px 24px; text-align: center; font-size: 16px; border: none; border-radius: 5px; cursor: pointer; text-decoration: none;"
-                     onclick="return confirm('Are you sure you want to accept this invitation? Click OK to join the workspace.')">
-                    Accept Invite
+                  <a href="${process.env.PUBLIC_URL}accept-invite?workspaceId=${workspaceId}&email=${email}&status=${status}" 
+                     style="display: inline-block; background-color: #4CAF50; color: white; padding: 12px 24px; text-align: center; font-size: 16px; border: none; border-radius: 5px; cursor: pointer; text-decoration: none;">
+                    View Invitation
                   </a>
                 </div>
                 

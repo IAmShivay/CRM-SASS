@@ -25,6 +25,8 @@ import {
   Zap,
   ChevronLeft,
   ChevronRight,
+  FileText,
+  Grid,
 } from "lucide-react";
 import Link from "next/link";
 import { redirect, usePathname } from "next/navigation";
@@ -714,27 +716,27 @@ export function Sidebar({
 
           {/* Tasks Section */}
           <div className="space-y-1">
-            {!isCollapsed && <p className="text-xs font-medium text-gray-500 px-2 mb-2">Tasks</p>}
+            {!isCollapsed && <p className="text-xs font-medium text-gray-500 px-2 mb-2">Documentation</p>}
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  variant="ghost"
+                  variant={pathname === "/documentation" ? "secondary" : "ghost"}
                   className={cn(
                     "w-full justify-start hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-white dark:hover:text-white relative",
                     isCollapsed && "justify-center px-2"
                   )}
                   onClick={() => setIsOpen(false)}
+                  asChild
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-slate-600 dark:text-slate-300">
-                    <rect width="18" height="18" x="3" y="3" rx="2" />
-                    <path d="m9 12 2 2 4-4" />
-                  </svg>
-                  {!isCollapsed && <span className="ml-2">Tasks</span>}
+                  <Link href="/documentation">
+                    <FileText className="h-4 w-4 text-slate-600 dark:text-slate-300" />
+                    {!isCollapsed && <span className="ml-2">Documentation</span>}
+                  </Link>
                 </Button>
               </TooltipTrigger>
               {isCollapsed && (
                 <TooltipContent side="right">
-                  <p>Tasks</p>
+                  <p>Documentation</p>
                 </TooltipContent>
               )}
             </Tooltip>
@@ -746,20 +748,18 @@ export function Sidebar({
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  variant="ghost"
+                  variant={pathname === "/apps" ? "secondary" : "ghost"}
                   className={cn(
                     "w-full justify-start hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-white dark:hover:text-white relative",
                     isCollapsed && "justify-center px-2"
                   )}
                   onClick={() => setIsOpen(false)}
+                  asChild
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-slate-600 dark:text-slate-300">
-                    <rect width="7" height="7" x="3" y="3" rx="1" />
-                    <rect width="7" height="7" x="14" y="3" rx="1" />
-                    <rect width="7" height="7" x="14" y="14" rx="1" />
-                    <rect width="7" height="7" x="3" y="14" rx="1" />
-                  </svg>
-                  {!isCollapsed && <span className="ml-2">Apps</span>}
+                  <Link href="/apps">
+                    <Grid className="h-4 w-4 text-slate-600 dark:text-slate-300" />
+                    {!isCollapsed && <span className="ml-2">Apps</span>}
+                  </Link>
                 </Button>
               </TooltipTrigger>
               {isCollapsed && (
