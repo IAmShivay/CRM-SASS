@@ -75,14 +75,29 @@ export default async function handler(
             email,
             "You have been added to a workspace",
             `
-              <p>You have been added to a workspace. Please login to your account to view the workspace.</p>
-              <p><strong>Note:</strong> Your invitation expires in 2 hours.</p>
-              <form action="${process.env.PUBLIC_URL}api/auth?workspaceId=${workspaceId}&email=${email}&status=${status}&action=acceptInvite" method="POST" style="display: inline;">
-                <button type="submit" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-align: center; font-size: 16px; border: none; border-radius: 5px; cursor: pointer;">
-                  Accept Invite
-                </button>
-              </form>
-              `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 5px;">
+                <h2 style="color: #333; margin-bottom: 20px;">Workspace Invitation</h2>
+                <p style="margin-bottom: 15px; color: #555; font-size: 16px;">You have been added to a workspace. Please login to your account to view the workspace.</p>
+                <p style="margin-bottom: 25px; color: #777; font-size: 14px;"><strong>Note:</strong> Your invitation expires in 2 hours.</p>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                  <a href="${process.env.PUBLIC_URL}api/auth?workspaceId=${workspaceId}&email=${email}&status=${status}&action=acceptInvite" 
+                     style="display: inline-block; background-color: #4CAF50; color: white; padding: 12px 24px; text-align: center; font-size: 16px; border: none; border-radius: 5px; cursor: pointer; text-decoration: none;"
+                     onclick="return confirm('Are you sure you want to accept this invitation? Click OK to join the workspace.')">
+                    Accept Invite
+                  </a>
+                </div>
+                
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0; color: #777; font-size: 14px;">
+                  <p>If you did not expect this invitation, please ignore this email.</p>
+                  <p>For any questions, please contact the workspace administrator.</p>
+                </div>
+              </div>
+            `,
+            {
+              requestReadReceipt: true,
+              deliveryNotification: true
+            }
           );
 
           if (error) {
@@ -142,13 +157,29 @@ export default async function handler(
             email,
             "You have been added to a workspace",
             `
-              <p>You have been added to a workspace. Please login to your account to view the workspace.</p>
-              <form action="${process.env.PUBLIC_URL}api/auth?workspaceId=${workspaceId}&email=${email}&status=${status}&action=acceptInvite" method="POST" style="display: inline;">
-                <button type="submit" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-align: center; font-size: 16px; border: none; border-radius: 5px; cursor: pointer;">
-                  Accept Invite
-                </button>
-              </form>
-              `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 5px;">
+                <h2 style="color: #333; margin-bottom: 20px;">Workspace Invitation</h2>
+                <p style="margin-bottom: 15px; color: #555; font-size: 16px;">You have been added to a workspace. Please login to your account to view the workspace.</p>
+                <p style="margin-bottom: 25px; color: #777; font-size: 14px;"><strong>Note:</strong> Your invitation expires in 2 hours.</p>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                  <a href="${process.env.PUBLIC_URL}api/auth?workspaceId=${workspaceId}&email=${email}&status=${status}&action=acceptInvite" 
+                     style="display: inline-block; background-color: #4CAF50; color: white; padding: 12px 24px; text-align: center; font-size: 16px; border: none; border-radius: 5px; cursor: pointer; text-decoration: none;"
+                     onclick="return confirm('Are you sure you want to accept this invitation? Click OK to join the workspace.')">
+                    Accept Invite
+                  </a>
+                </div>
+                
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0; color: #777; font-size: 14px;">
+                  <p>If you did not expect this invitation, please ignore this email.</p>
+                  <p>For any questions, please contact the workspace administrator.</p>
+                </div>
+              </div>
+            `,
+            {
+              requestReadReceipt: true,
+              deliveryNotification: true
+            }
           );
           console.log(existingMember, "roka", existingError)
 

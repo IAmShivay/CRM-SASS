@@ -182,12 +182,14 @@ export default async function handler(
                 break;
               }
 
-              res.setHeader("Location", "/dashboard");
+              // Redirect to dashboard with a success message
+              res.setHeader("Location", "/dashboard?inviteAccepted=true");
               res.status(302).end();
             } else {
+              // Redirect to signup with the email and workspace ID
               res.setHeader(
                 "Location",
-                `/signup?email=${email}&workspaceId=${workspaceId}`
+                `/signup?email=${email}&workspaceId=${workspaceId}&invitePending=true`
               );
               res.status(302).end();
             }

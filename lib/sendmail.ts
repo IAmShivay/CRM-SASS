@@ -10,16 +10,33 @@ const transporter = nodemailer.createTransport({
     pass: process.env.SMTP_PASS,
   },
 });
-export const sendMail = async (to: string, subject: string, html: string) => {
+export const sendMail = async (to: string, subject: string, html: string, options: { 
+  requestReadReceipt?: boolean, 
+  deliveryNotification?: boolean 
+} = {}) => {
   try {
     const info = await transporter.sendMail({
       from: `"PRE CRM" <${process.env.SMTP_USER}>`,
       to,
       subject,
       html,
+      headers: {
+        ...(options.requestReadReceipt ? {
+          'Disposition-Notification-To': process.env.SMTP_USER || '',
+          'X-Confirm-Reading-To': process.env.SMTP_USER || '',
+          'Return-Receipt-To': process.env.SMTP_USER || '',
+          'Read-Receipt-To': process.env.SMTP_USER || '',
+        } : {}),
+        ...(options.deliveryNotification ? {
+          'X-DSN-Notify': 'SUCCESS,FAILURE,DELAY',
+          'Delivery-Status-Notification-Options': 'SUCCESS,FAILURE,DELAY',
+        } : {})
+      },
     });
     console.log("Message sent: %s", info.messageId);
+    return info;
   } catch (error) {
     console.error("Error sending email:", error);
+    throw error;
   }
 };
