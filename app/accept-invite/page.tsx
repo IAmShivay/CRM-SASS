@@ -1,12 +1,33 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, CheckCircle, XCircle } from "lucide-react";
 import { toast } from "sonner";
 
-export default function AcceptInvitePage() {
+// This tells Next.js to render this page dynamically at request time
+export const dynamic = 'force-dynamic';
+
+// Create a loading component
+function InvitePageLoading() {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle>Processing Invitation</CardTitle>
+          <CardDescription>Please wait while we process your invitation...</CardDescription>
+        </CardHeader>
+        <CardContent className="flex justify-center py-8">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+// Main component wrapped in Suspense
+function AcceptInviteContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(true);
@@ -49,80 +70,77 @@ export default function AcceptInvitePage() {
       // Set success state
       setSuccess(true);
       toast.success("Invitation accepted successfully!");
-      
+
       // Redirect to dashboard after a short delay
       setTimeout(() => {
-        router.push("/dashboard?inviteAccepted=true");
+        router.push("/dashboard");
       }, 2000);
-    } catch (error: any) {
-      setError(error.message || "An unexpected error occurred");
-      toast.error(error.message || "Failed to accept invitation");
+    } catch (err: any) {
+      setError(err.message || "An error occurred while accepting the invitation.");
+      toast.error("Failed to accept invitation");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDecline = () => {
-    toast.info("Invitation declined");
+  const handleDeclineInvite = () => {
+    // Just redirect to the login page
     router.push("/login");
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
-      <Card className="w-full max-w-md shadow-lg">
-        <CardHeader className="space-y-1">
-          <div className="flex justify-center mb-4">
-            <div className="flex items-center justify-center bg-black text-white rounded-md font-bold text-xs w-12 h-12">
-              SC
-            </div>
-          </div>
-          <CardTitle className="text-2xl font-bold text-center">Workspace Invitation</CardTitle>
-          <CardDescription className="text-center">
-            {email ? `You've been invited to join a workspace as ${email}` : "You've been invited to join a workspace"}
+    <div className="flex flex-col items-center justify-center min-h-screen p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle>{success ? "Invitation Accepted" : "Workspace Invitation"}</CardTitle>
+          <CardDescription>
+            {success
+              ? "You have successfully joined the workspace."
+              : `You've been invited to join a workspace. Would you like to accept?`}
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent>
           {loading ? (
-            <div className="flex justify-center items-center py-8">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              <p className="ml-2">Processing your invitation...</p>
+            <div className="flex justify-center py-4">
+              <Loader2 className="h-6 w-6 animate-spin text-primary" />
             </div>
           ) : error ? (
-            <div className="text-center py-6 space-y-4">
-              <XCircle className="h-12 w-12 text-destructive mx-auto" />
-              <p className="text-destructive">{error}</p>
-              <Button variant="outline" onClick={() => router.push("/login")}>
-                Return to Login
-              </Button>
+            <div className="flex flex-col items-center gap-2 py-4 text-center">
+              <XCircle className="h-8 w-8 text-destructive" />
+              <p className="text-sm text-muted-foreground">{error}</p>
             </div>
           ) : success ? (
-            <div className="text-center py-6 space-y-4">
-              <CheckCircle className="h-12 w-12 text-primary mx-auto" />
-              <p className="text-primary">Invitation accepted successfully!</p>
-              <p>Redirecting to dashboard...</p>
+            <div className="flex flex-col items-center gap-2 py-4 text-center">
+              <CheckCircle className="h-8 w-8 text-primary" />
+              <p className="text-sm text-muted-foreground">Redirecting you to the dashboard...</p>
             </div>
           ) : (
-            <div className="space-y-4 py-4">
-              <p className="text-center">
-                You've been invited to collaborate in a workspace. Click the button below to accept this invitation and join the team.
+            <div className="space-y-4">
+              <p className="text-sm">
+                <strong>Email:</strong> {email}
               </p>
-              <p className="text-sm text-muted-foreground text-center">
-                Note: Your invitation will expire in 2 hours.
-              </p>
+              {/* Don't show workspace ID to user, it's internal */}
             </div>
           )}
         </CardContent>
         {!loading && !error && !success && (
           <CardFooter className="flex justify-between">
-            <Button variant="outline" onClick={handleDecline}>
+            <Button variant="outline" onClick={handleDeclineInvite}>
               Decline
             </Button>
-            <Button onClick={handleAcceptInvite}>
-              Accept Invitation
-            </Button>
+            <Button onClick={handleAcceptInvite}>Accept Invitation</Button>
           </CardFooter>
         )}
       </Card>
     </div>
+  );
+}
+
+// Export the page component with Suspense
+export default function AcceptInvitePage() {
+  return (
+    <Suspense fallback={<InvitePageLoading />}>
+      <AcceptInviteContent />
+    </Suspense>
   );
 }
