@@ -12,7 +12,7 @@ import Image from "next/image";
 
 const testimonials = [
   {
-    quote: "LeadHive has transformed how we manage our leads. The interface is intuitive and the features are exactly what we needed. We've seen our lead qualification time cut in half.",
+    quote: "InfiLabs has transformed how we manage our leads. The interface is intuitive and the features are exactly what we needed. We've seen our lead qualification time cut in half.",
     author: "Sarah Johnson",
     role: "Marketing Director",
     company: "TechCorp",
@@ -20,7 +20,7 @@ const testimonials = [
     metric: "45% increase in qualified leads"
   },
   {
-    quote: "The team collaboration features are outstanding. We've seen a 40% increase in conversion rates since switching to LeadHive. The real-time notifications keep everyone in sync.",
+    quote: "The team collaboration features are outstanding. We've seen a 40% increase in conversion rates since switching to InfiLabs. The real-time notifications keep everyone in sync.",
     author: "Michael Chen",
     role: "Sales Manager",
     company: "GrowthCo",
@@ -36,7 +36,7 @@ const testimonials = [
     metric: "20+ hours saved weekly"
   },
   {
-    quote: "LeadHive's analytics gives us actionable insights we never had before. We can now make data-driven decisions that directly impact our bottom line.",
+    quote: "InfiLabs's analytics gives us actionable insights we never had before. We can now make data-driven decisions that directly impact our bottom line.",
     author: "James Wilson",
     role: "Sales Director",
     company: "Innovate LLC",
@@ -65,7 +65,7 @@ export const Testimonials = () => {
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70"> worldwide</span>
             </h2>
             <p className="text-muted-foreground text-lg max-w-xl">
-              See how sales teams are transforming their lead management and driving better results with LeadHive.
+              See how sales teams are transforming their lead management and driving better results with InfiLabs.
             </p>
           </div>
           <Button variant="outline" className="self-start md:self-auto">

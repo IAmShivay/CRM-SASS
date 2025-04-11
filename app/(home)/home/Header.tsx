@@ -26,7 +26,7 @@ export const Header = () => {
         <div className="flex justify-between items-center">
           <Link href="/" className="flex items-center gap-2 hover:opacity-90 transition-opacity">
             <Zap className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold">LeadHive</span>
+            <span className="text-xl font-bold">InfiLabs</span>
           </Link>
 
           {/* Desktop Navigation */}

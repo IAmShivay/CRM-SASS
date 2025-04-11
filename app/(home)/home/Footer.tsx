@@ -9,7 +9,7 @@ export const Footer = () => {
         <div className="mb-12 pb-12 border-b border-border/20">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="max-w-md">
-              <h3 className="text-xl font-bold mb-2">Stay updated with LeadHive</h3>
+              <h3 className="text-xl font-bold mb-2">Stay updated with InfiLabs</h3>
               <p className="text-muted-foreground text-sm">Get the latest news, tips and updates about CRM and lead management.</p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
@@ -31,7 +31,7 @@ export const Footer = () => {
           <div className="md:col-span-2">
             <div className="flex items-center gap-2 mb-4">
               <Zap className="h-5 w-5 text-primary" />
-              <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70">LeadHive</span>
+              <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70">InfiLabs</span>
             </div>
             <p className="text-muted-foreground text-sm mb-6 max-w-xs">
               Transforming lead management for modern businesses with intelligent tools that drive growth.
@@ -43,7 +43,7 @@ export const Footer = () => {
               </div>
               <div className="flex items-center gap-3 text-sm text-muted-foreground">
                 <Mail className="h-4 w-4 text-primary" />
-                <span>contact@leadhive.com</span>
+                <span>contact@InfiLabs.com</span>
               </div>
               <div className="flex items-center gap-3 text-sm text-muted-foreground">
                 <MapPin className="h-4 w-4 text-primary" />
@@ -100,7 +100,7 @@ export const Footer = () => {
         
         {/* Bottom section with social links and copyright */}
         <div className="border-t border-border/20 mt-12 pt-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <p className="text-muted-foreground text-sm">&copy; {new Date().getFullYear()} LeadHive. All rights reserved.</p>
+          <p className="text-muted-foreground text-sm">&copy; {new Date().getFullYear()} InfiLabs. All rights reserved.</p>
           
           <div className="flex items-center gap-4">
             <a href="#" className="p-2 rounded-full bg-background hover:bg-primary/10 transition-colors">
